@@ -1,3 +1,4 @@
+import api from "@/lib/api";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -10,14 +11,20 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (
-          credentials?.email === "user@example.com" &&
-          credentials?.password === "password"
-        ) {
+        const res = await api.post("/auth/token/", {
+          username: credentials?.email,
+          password: credentials?.password,
+        });
+
+        if (res.data) {
+          const res1 = await api.get(`/users/?email=${credentials?.email}`, {
+            headers: {
+              Authorization: `Token ${res.data.token}`,
+            },
+          });
           return {
-            id: "1",
-            name: "Demo User",
-            email: "user@example.com",
+            token: res.data?.token,
+            ...res1.data?.[0],
           };
         }
         return null;
@@ -35,12 +42,15 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.accessToken = user.token;
+        token.name = user?.username;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.token = token.accessToken as string;
       }
       return session;
     },

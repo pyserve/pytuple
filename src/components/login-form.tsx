@@ -12,9 +12,14 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LoginSchema, loginSchema } from "@/schemas/auth/LoginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Info } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
+import { Alert, AlertTitle } from "./ui/alert";
 import {
   Form,
   FormControl,
@@ -28,6 +33,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter();
+  const [error, setError] = useState("");
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -36,10 +43,19 @@ export function LoginForm({
     },
   });
 
-  const onSubmit = (values: LoginSchema) => {
+  const onSubmit = async (values: LoginSchema) => {
     console.log("Form submitted with values:", values);
     try {
-      throw new Error("Custom Error");
+      const res = await signIn("credentials", {
+        redirect: false,
+        ...values,
+      });
+      console.log("🚀 ~ onSubmit ~ res:", res);
+      if (res?.error) {
+        setError("Invalid credentials");
+      } else {
+        router.push("/");
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Error");
     }
@@ -56,8 +72,20 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert className="mb-3 bg-rose-500">
+              <AlertTitle className="flex gap-1 items-center">
+                <Info />
+                <span>{error}</span>
+              </AlertTitle>
+            </Alert>
+          )}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-8"
+              onClick={() => setError("")}
+            >
               <div className="flex flex-col gap-6">
                 <FormField
                   control={form.control}

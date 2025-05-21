@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getServerSession } from "next-auth";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
@@ -9,7 +10,8 @@ const api = axios.create({
 
 axios.interceptors.request.use(
   function (config) {
-    config.headers.Authorization = `Bearer ${""}`;
+    const session = getServerSession();
+    config.headers.Authorization = `Token ${session?.token}`;
     return config;
   },
   function (error) {
