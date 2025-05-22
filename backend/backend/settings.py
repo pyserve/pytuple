@@ -19,20 +19,21 @@ INSTALLED_APPS = [
     "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "corsheaders",
     "rest_framework",
     "django_filters",
     "dj_rest_auth",
     "dj_rest_auth.registration",
     "rest_framework.authtoken",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "accounts.apps.AccountsConfig",
     "common.apps.CommonConfig",
     "lead.apps.LeadConfig",
@@ -42,6 +43,16 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": "292000457428-l0er7pfq1np5ca9ps9hgqpferm46muk9.apps.googleusercontent.com",
+            "secret": "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",
+            "key": "",
+        },
+    }
+}
 
 AUTH_USER_MODEL = "accounts.User"
 

@@ -5,9 +5,14 @@ import {
   PaginationContent,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -21,9 +26,12 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   PaginationState,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { List } from "lucide-react";
 import React, { useMemo } from "react";
 
 interface DataTableProps<TData, TValue> {
@@ -41,114 +49,217 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 50,
+    pageSize: 20,
   });
-  const number = useMemo(() => {
-    const start = Math.max(1, pagination.pageIndex - 1);
-    const end = Math.min(10, pagination.pageIndex + 2);
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-  }, [pagination.pageIndex]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     state: {
       pagination,
+      sorting,
     },
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    enableSorting: true,
   });
 
-  return (
-    <div className="flex flex-col h-full">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="bg-gray-100 sticky top-0">
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="font-medium">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+  const pageNumbers = useMemo(() => {
+    const totalPages = table.getPageCount();
+    const currentPage = pagination.pageIndex;
+    const maxPageNumbers = 3;
+    let startPage = Math.max(0, currentPage - Math.floor(maxPageNumbers / 2));
+    const endPage = Math.min(totalPages - 1, startPage + maxPageNumbers - 1);
+    if (endPage - startPage + 1 < maxPageNumbers) {
+      startPage = Math.max(0, endPage - maxPageNumbers + 1);
+    }
+    return Array.from(
+      { length: endPage - startPage + 1 },
+      (_, i) => startPage + i
+    );
+  }, [pagination.pageIndex, table.getPageCount()]);
 
-      <div className="flex items-center p-4 bg-gray-100">
-        <Pagination className="flex-1 justify-between">
-          <PaginationContent>
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex gap-2">
-                <div>Page</div>
-                <strong>
+  return (
+    <div className="flex flex-col min-h-0">
+      <div className="flex-1 overflow-auto max-h-[79vh]">
+        <Table className="min-w-full divide-y divide-gray-200">
+          <TableHeader className="shadow-sm bg-gray-100">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase "
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    <div className="flex items-center gap-2">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      <span className="cursor-pointer hover:text-gray-900">
+                        {header.column.getIsSorted() === "asc" && " 🔼"}
+                        {header.column.getIsSorted() === "desc" && " 🔽"}
+                        {!["asc", "desc"].includes(
+                          header.column.getIsSorted() || ""
+                        ) && <List size={14} />}
+                      </span>
+                    </div>
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-100 ">
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} className="bg-white hover:bg-gray-50">
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-800"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No data to display.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="sticky inset-0 bottom-0 bg-white">
+        <Pagination className="p-4 bg-gray-50 border-t border-gray-200 flex items-center gap-4">
+          <PaginationContent className="">
+            <div className="flex items-center gap-6 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <span>Page</span>
+                <strong className="font-medium text-gray-800">
                   {table.getState().pagination.pageIndex + 1} of{" "}
                   {table.getPageCount().toLocaleString()}
                 </strong>
               </div>
-              <div className="text-xs">
-                Showing {table.getRowModel().rows.length.toLocaleString()} of{" "}
-                {table.getRowCount().toLocaleString()} row(s)
+              <div className="text-xs hidden sm:block">
+                Showing{" "}
+                <span className="font-medium">
+                  {table.getRowModel().rows.length.toLocaleString()}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium">
+                  {table.getRowCount().toLocaleString()}
+                </span>{" "}
+                row(s)
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="sr-only sm:not-sr-only">Rows per page:</span>
+                <Select
+                  value={`${table.getState().pagination.pageSize}`}
+                  onValueChange={(value) => {
+                    table.setPageSize(Number(value));
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-[70px] bg-white border border-gray-300 shadow-sm text-gray-700 hover:border-blue-400">
+                    <SelectValue
+                      placeholder={table.getState().pagination.pageSize}
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white shadow-lg border border-gray-200">
+                    {[10, 20, 30, 40, 50, 100].map((pageSize) => (
+                      <SelectItem key={pageSize} value={`${pageSize}`}>
+                        {pageSize}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </PaginationContent>
-          <PaginationContent>
-            <PaginationItem
-              className={
-                !table.getCanPreviousPage()
-                  ? "pointer-events-none opacity-50 cursor-not-allowed"
-                  : ""
-              }
-              onClick={() =>
-                setPagination((pag) => ({
-                  pageIndex: pag.pageIndex - 1,
-                  pageSize: pag.pageSize,
-                }))
-              }
-            >
-              <PaginationPrevious href="#" />
+          <PaginationContent className="flex items-center gap-1">
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={() => table.setPageIndex(0)}
+                className={`flex items-center justify-center h-8 w-8 rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 ${
+                  !table.getCanPreviousPage()
+                    ? "opacity-50 cursor-not-allowed pointer-events-none"
+                    : ""
+                }`}
+              >
+                {"<<"}
+              </PaginationLink>
             </PaginationItem>
-            {number.map((n) => (
-              <PaginationItem key={n}>
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={() => table.previousPage()}
+                className={`flex items-center justify-center h-8 w-8 rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 ${
+                  !table.getCanPreviousPage()
+                    ? "opacity-50 cursor-not-allowed pointer-events-none"
+                    : ""
+                }`}
+              >
+                {"<"}
+              </PaginationLink>
+            </PaginationItem>
+            {pageNumbers.map((pageIndex) => (
+              <PaginationItem key={pageIndex}>
                 <PaginationLink
                   href="#"
-                  isActive={n === pagination.pageIndex + 1}
+                  isActive={pageIndex === pagination.pageIndex}
+                  onClick={() => table.setPageIndex(pageIndex)}
+                  className={`flex items-center justify-center h-8 w-8 rounded-md transition-colors duration-200 ease-in-out ${
+                    pageIndex === pagination.pageIndex
+                      ? "bg-blue-600 text-white shadow-md hover:bg-blue-700"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                  }`}
                 >
-                  {n}
+                  {pageIndex + 1}
                 </PaginationLink>
               </PaginationItem>
             ))}
-
-            <PaginationItem
-              className={
-                !table.getCanNextPage()
-                  ? "pointer-events-none opacity-50 cursor-not-allowed"
-                  : ""
-              }
-              onClick={() =>
-                setPagination((pag) => ({
-                  pageIndex: pag.pageIndex + 1,
-                  pageSize: pag.pageSize,
-                }))
-              }
-            >
-              <PaginationNext href={"#"} />
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={() => table.nextPage()}
+                className={`flex items-center justify-center h-8 w-8 rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 ${
+                  !table.getCanNextPage()
+                    ? "opacity-50 cursor-not-allowed pointer-events-none"
+                    : ""
+                }`}
+              >
+                {">"}
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                className={`flex items-center justify-center h-8 w-8 rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 ${
+                  !table.getCanNextPage()
+                    ? "opacity-50 cursor-not-allowed pointer-events-none"
+                    : ""
+                }`}
+              >
+                {">>"}
+              </PaginationLink>
             </PaginationItem>
           </PaginationContent>
         </Pagination>

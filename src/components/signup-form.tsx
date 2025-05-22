@@ -9,14 +9,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import api from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { LoginSchema, loginSchema } from "@/schemas/auth/LoginSchema";
+import { signupSchema, SignupSchema } from "@/schemas/auth/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Info } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { Info, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 import { Alert, AlertTitle } from "./ui/alert";
 import {
@@ -28,47 +27,43 @@ import {
   FormMessage,
 } from "./ui/form";
 
-export function LoginForm({
+export function SignupForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [error, setError] = useState("");
-  const form = useForm<LoginSchema>({
-    resolver: zodResolver(loginSchema),
+  const [IsLoading, setIsLoading] = useState(false);
+  const form = useForm<SignupSchema>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
+      first_name: "",
+      last_name: "",
+      confirm_password: "",
     },
   });
 
-  const onSubmit = async (values: LoginSchema) => {
-    console.log("Form submitted with values:", values);
+  const onSubmit = async (values: SignupSchema) => {
+    setIsLoading(true);
     try {
-      await signIn("credentials", {
-        redirect: false,
-        ...values,
-        callbackUrl: "/",
-      });
+      const res = await api.post("/users/", values);
+      console.log("🚀 ~ onSubmit ~ res:", res);
     } catch (error) {
+      console.log("🚀 ~ onSubmit ~ error:", error);
       toast.error(error instanceof Error ? error.message : "Error");
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const handleGoogleLogin = async () => {
-    await signIn("google", {
-      callbackUrl: "/",
-    });
-  };
-
-  console.log(form.formState.errors);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Site Login</CardTitle>
+          <CardTitle className="text-2xl">Register an Account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your details below to create an account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -86,6 +81,34 @@ export function LoginForm({
               className="space-y-8"
               onClick={() => setError("")}
             >
+              <div className="grid grid-cols-2 gap-2">
+                <FormField
+                  control={form.control}
+                  name="first_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <div className="flex flex-col gap-6">
                 <FormField
                   control={form.control}
@@ -111,13 +134,28 @@ export function LoginForm({
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center">
-                          <FormLabel>Password</FormLabel>
-                          <a
-                            href="#"
-                            className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                          >
-                            Forgot your password?
-                          </a>
+                          <FormLabel>New Password</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="******"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <FormField
+                    control={form.control}
+                    name="confirm_password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center">
+                          <FormLabel>Confirm Password</FormLabel>
                         </div>
                         <FormControl>
                           <Input
@@ -132,21 +170,20 @@ export function LoginForm({
                   />
                 </div>
                 <Button type="submit" className="w-full">
-                  Login
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGoogleLogin}
-                >
-                  <FcGoogle /> Login with Google
+                  {IsLoading ? (
+                    <span className="flex gap-2">
+                      <Loader2 className="animate-spin" />
+                      <span>Logging in..</span>
+                    </span>
+                  ) : (
+                    "Login"
+                  )}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <a href="/signup" className="underline underline-offset-4">
-                  Sign up
+                Already have an account?{" "}
+                <a href="/login" className="underline underline-offset-4">
+                  Login
                 </a>
               </div>
             </form>

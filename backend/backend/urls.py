@@ -1,4 +1,5 @@
 from accounts.urls import router as account_routers
+from accounts.views import GoogleLogin
 from call.urls import router as call_routers
 from django.contrib import admin
 from django.urls import include, path
@@ -17,6 +18,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("dj-rest-auth/", include("dj_rest_auth.urls")),
     path("dj-rest-auth/registration/", include("dj_rest_auth.registration.urls")),
+    path("dj-rest-auth/google/", GoogleLogin.as_view(), name="google_login"),
     path("auth/token/", views.obtain_auth_token),
     path("", include(router.urls)),
 ]

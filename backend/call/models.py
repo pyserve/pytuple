@@ -36,9 +36,3 @@ class Call(models.Model):
 
     def __str__(self):
         return f"Call with {self.lead.first_name} {self.lead.last_name} - {self.status}"
-
-    def save(self, *args, **kwargs):
-        if self.start_time and self.end_time:
-            duration = (self.end_time - self.start_time).total_seconds()
-            self.duration_seconds = int(duration)
-        super().save(*args, **kwargs)

@@ -5,7 +5,7 @@ import { UserDropdown } from "./user-dropdown";
 
 export function AppHeader() {
   return (
-    <header className="flex h-16 items-center justify-between border-b px-4">
+    <header className="flex h-16 items-center justify-between border-b px-4 max-w-full">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="h-6" />
