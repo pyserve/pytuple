@@ -36,25 +36,24 @@ const data = {
       items: [
         {
           title: "Dashboard",
-          url: "#",
+          url: "/dashboard",
+          isActive: true,
         },
         {
           title: "Calls",
-          url: "#",
+          url: "/calls",
         },
         {
           title: "Leads",
-          url: "#",
+          url: "/leads",
         },
         {
           title: "Analytics",
-          url: "#",
-          isActive: true,
+          url: "/analytics",
         },
         {
           title: "Webhooks",
-          url: "#",
-          isActive: true,
+          url: "/webhooks",
         },
       ],
     },
@@ -106,10 +105,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar {...props}>
       <SidebarHeader>
         <div className="flex flex-col space-y-1">
-          <h1 className="text-xl font-bold">Pytuple AI</h1>
-          <p className="text-sm text-muted-foreground">
-            AI Voice Calling System
-          </p>
+          <h1 className="text-xl font-bold">Eco Home Group</h1>
+          <p className="text-sm text-muted-foreground">An Advanced CRM</p>
         </div>
       </SidebarHeader>
       <SidebarContent>

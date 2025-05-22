@@ -29,11 +29,16 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "django_filters",
     "dj_rest_auth",
     "dj_rest_auth.registration",
     "rest_framework.authtoken",
     "accounts.apps.AccountsConfig",
     "common.apps.CommonConfig",
+    "lead.apps.LeadConfig",
+    "call.apps.CallConfig",
+    "analytics.apps.AnalyticsConfig",
+    "djangoseed.apps.DjangoseedConfig",
 ]
 
 SITE_ID = 1
@@ -49,6 +54,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ],
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
 AUTHENTICATION_BACKENDS = [

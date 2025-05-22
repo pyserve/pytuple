@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models.fields.related import ForeignObjectRel
 
 
 class BaseModelAdmin(admin.ModelAdmin):
@@ -6,7 +7,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         fields = [
             field.name
             for field in self.model._meta.get_fields()
-            if field.name not in ["password"]
+            if not isinstance(field, ForeignObjectRel) and field.name != "password"
         ]
         fields = sorted(fields)
         if "id" in fields:
