@@ -67,7 +67,7 @@ const data = {
         },
         {
           title: "Connected Apps",
-          url: "#",
+          url: "/connections",
         },
       ],
     },

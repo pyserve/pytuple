@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { BellIcon } from "lucide-react";
 import { UserDropdown } from "./user-dropdown";
 
 export function AppHeader() {
@@ -15,7 +16,12 @@ export function AppHeader() {
           className="w-[250px] md:w-[300px]"
         />
       </div>
-      <UserDropdown />
+      <div className="flex gap-2 items-center">
+        <div className="bg-gray-50 rounded-full p-2">
+          <BellIcon size={18} />
+        </div>
+        <UserDropdown />
+      </div>
     </header>
   );
 }
