@@ -51,10 +51,6 @@ const data = {
           title: "Analytics",
           url: "/analytics",
         },
-        {
-          title: "Webhooks",
-          url: "/webhooks",
-        },
       ],
     },
     {
@@ -62,11 +58,7 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Accounts",
-          url: "#",
-        },
-        {
-          title: "Billing",
+          title: "Accounts & Billing",
           url: "#",
         },
         {
@@ -74,11 +66,25 @@ const data = {
           url: "#",
         },
         {
-          title: "Theme",
+          title: "Connected Apps",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "AI & Model Training",
+      url: "#",
+      items: [
+        {
+          title: "Train Model",
           url: "#",
         },
         {
-          title: "Connected Apps",
+          title: "Model Status",
+          url: "#",
+        },
+        {
+          title: "Model Versions",
           url: "#",
         },
       ],
