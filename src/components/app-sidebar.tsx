@@ -59,11 +59,7 @@ const data = {
       items: [
         {
           title: "Accounts & Billing",
-          url: "#",
-        },
-        {
-          title: "Notifications",
-          url: "#",
+          url: "/accounts",
         },
         {
           title: "Connected Apps",
@@ -76,16 +72,20 @@ const data = {
       url: "#",
       items: [
         {
+          title: "Upload Files",
+          url: "/upload",
+        },
+        {
           title: "Train Model",
-          url: "#",
+          url: "/train",
         },
         {
           title: "Model Status",
-          url: "#",
+          url: "/status",
         },
         {
           title: "Model Versions",
-          url: "#",
+          url: "versions",
         },
       ],
     },
@@ -112,8 +112,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar {...props}>
       <SidebarHeader>
         <div className="flex flex-col space-y-1">
-          <h1 className="text-xl font-bold">Eco Home Group</h1>
-          <p className="text-sm text-muted-foreground">An Advanced CRM</p>
+          <h1 className="text-xl font-bold">Pytuple AI</h1>
+          <p className="text-sm text-muted-foreground">
+            Voice Calling AI System
+          </p>
         </div>
       </SidebarHeader>
       <SidebarContent>

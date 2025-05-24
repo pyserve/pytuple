@@ -14,12 +14,12 @@ export const setAuthToken = (token: string | null) => {
 };
 
 api.interceptors.request.use(
-  (config) => {
-    if (config.data instanceof FormData) {
-      delete config.headers["Content-Type"];
+  (request) => {
+    if (request.data instanceof FormData) {
+      delete request.headers["Content-Type"];
     }
 
-    return config;
+    return request;
   },
   (error) => Promise.reject(error)
 );

@@ -1,20 +1,27 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Download, Plus, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Download, Edit, Plus, Upload } from "lucide-react";
 
 export function PageLayout({
   children,
-  createRoute = "/create",
+  createComponent,
   importExport = false,
 }: {
   children: React.ReactNode;
-  createRoute?: string;
+  createComponent: React.ReactNode;
   importExport?: boolean;
 }) {
-  const router = useRouter();
-
   return (
     <div className="p-2">
       <div className="flex justify-end items-center">
@@ -31,10 +38,26 @@ export function PageLayout({
               </Button>
             </>
           )}
-          <Button onClick={() => router.push(createRoute)}>
-            <Plus className="h-4 w-4" />
-            Create New
-          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4" />
+                Create New
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="min-w-1/2">
+              <SheetHeader>
+                <SheetTitle className="flex gap-2 items-center">
+                  <Edit /> Create Page
+                </SheetTitle>
+                <SheetDescription></SheetDescription>
+              </SheetHeader>
+              {createComponent}
+              <SheetFooter>
+                <SheetClose asChild></SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
       {children}

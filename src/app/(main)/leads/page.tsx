@@ -1,16 +1,22 @@
+"use client";
 import { DataTable } from "@/components/data-table/list-view";
 import { PageLayout } from "@/components/page-layout";
-import api from "@/lib/api";
+import { useFetchRecords } from "@/hooks/fetch-records";
 import { LeadColumns } from "./columns";
 
-export default async function Lead() {
-  const res = await api.get("/leads/");
+export default function Lead() {
+  const { data: leads, isFetched } = useFetchRecords({
+    module: "Lead",
+  });
+  console.log("🚀 ~ Lead ~ leads:", leads);
+
+  if (!isFetched) return "Loading...";
 
   return (
-    <PageLayout createRoute="/leads/create/" importExport>
+    <PageLayout createComponent={<div></div>} importExport>
       <DataTable
         columns={LeadColumns}
-        data={res.data}
+        data={leads || []}
         enableSorting
         enablePagination
       />

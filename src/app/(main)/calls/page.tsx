@@ -1,16 +1,19 @@
+"use client";
 import { DataTable } from "@/components/data-table/list-view";
 import { PageLayout } from "@/components/page-layout";
-import api from "@/lib/api";
+import { useFetchRecords } from "@/hooks/fetch-records";
 import { CallColumns } from "./columns";
 
-export default async function UserTable() {
-  const res = await api.get("/calls/");
+export default function Page() {
+  const { data: calls } = useFetchRecords({
+    module: "Call",
+  });
 
   return (
-    <PageLayout createRoute="/calls/create/" importExport>
+    <PageLayout createComponent={<div></div>} importExport>
       <DataTable
         columns={CallColumns}
-        data={res.data}
+        data={calls || []}
         enableSorting
         enablePagination
       />
