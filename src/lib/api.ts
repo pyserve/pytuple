@@ -9,12 +9,17 @@ const api = axios.create({
   timeout: 6000,
 });
 
-export const setAuthToken = (token: string | null) => {
-  api.defaults.headers.common["Authorization"] = `Token ${token}`;
-};
-
 api.interceptors.request.use(
-  (request) => {
+  async (request) => {
+    try {
+      const res = await axios.get("/api/auth/session");
+      if (res.data?.token) {
+        request.headers.Authorization = `Token ${res.data?.token}`;
+      }
+    } catch (error) {
+      console.log("🚀 ~ error:", error);
+    }
+
     if (request.data instanceof FormData) {
       delete request.headers["Content-Type"];
     }

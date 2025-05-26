@@ -1,4 +1,4 @@
-import api, { setAuthToken } from "@/lib/api";
+import axios from "axios";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -31,17 +31,23 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const res = await api.post("/auth/token/", {
-          username: credentials?.email,
-          password: credentials?.password,
-        });
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/token/`,
+          {
+            username: credentials?.email,
+            password: credentials?.password,
+          }
+        );
 
         if (res.data) {
-          const res1 = await api.get(`/users/?email=${credentials?.email}`, {
-            headers: {
-              Authorization: `Token ${res.data.token}`,
-            },
-          });
+          const res1 = await axios.get(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/?email=${credentials?.email}`,
+            {
+              headers: {
+                Authorization: `Token ${res.data.token}`,
+              },
+            }
+          );
           return {
             token: res.data?.token,
             ...res1.data?.[0],
@@ -63,13 +69,23 @@ export const authOptions: NextAuthOptions = {
       if (account && user) {
         if (account.provider === "google") {
           try {
-            const res = await api.post("/dj-rest-auth/google/", {
-              access_token: account.access_token,
-            });
-
+            const res = await axios.post(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/dj-rest-auth/google/`,
+              {
+                access_token: account.access_token,
+              }
+            );
+            const res1 = await axios.get(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/?email=${user?.email}`,
+              {
+                headers: {
+                  Authorization: `Token ${res.data.key}`,
+                },
+              }
+            );
             return {
               ...token,
-              id: res.data?.user?.id || user.id,
+              id: res1.data?.[0].id || user.id,
               accessToken: res.data?.key || res.data?.token,
               name: user.name,
               email: user.email,
@@ -99,9 +115,6 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.token = token.accessToken as string;
-      }
-      if (token.accessToken) {
-        setAuthToken(token.accessToken as string);
       }
       return session;
     },

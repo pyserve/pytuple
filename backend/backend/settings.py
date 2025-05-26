@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "call.apps.CallConfig",
     "analytics.apps.AnalyticsConfig",
     "djangoseed.apps.DjangoseedConfig",
+    "machinelearning.apps.MachinelearningConfig",
 ]
 
 SITE_ID = 1

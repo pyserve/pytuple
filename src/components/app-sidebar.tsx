@@ -12,6 +12,20 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import {
+  Activity,
+  ArrowUpCircle,
+  BarChart2,
+  BookOpen,
+  Brain,
+  CreditCard,
+  LayoutDashboard,
+  Link,
+  PhoneCall,
+  Star,
+  Upload,
+  Users,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const data = {
@@ -20,86 +34,100 @@ const data = {
     {
       title: "Getting Started",
       url: "#",
+      icon: BookOpen,
       items: [
         {
           title: "Startup Guide",
           url: "#",
+          icon: BookOpen,
         },
         {
           title: "Video Tutorials",
           url: "#",
+          icon: BookOpen,
         },
       ],
     },
     {
       title: "Applications",
       url: "#",
+      icon: LayoutDashboard,
       items: [
         {
           title: "Dashboard",
           url: "/dashboard",
+          icon: LayoutDashboard,
         },
         {
           title: "Calls",
           url: "/calls",
+          icon: PhoneCall,
         },
         {
           title: "Leads",
           url: "/leads",
+          icon: Users,
         },
         {
           title: "Analytics",
           url: "/analytics",
+          icon: BarChart2,
         },
       ],
     },
     {
       title: "Accounts & Settings",
       url: "#",
+      icon: CreditCard,
       items: [
         {
           title: "Accounts & Billing",
           url: "/accounts",
+          icon: CreditCard,
         },
         {
-          title: "Connected Apps",
+          title: "Connections",
           url: "/connections",
+          icon: Link,
         },
       ],
     },
     {
       title: "AI & Model Training",
       url: "#",
+      icon: Brain,
       items: [
         {
           title: "Upload Files",
           url: "/upload",
+          icon: Upload,
         },
         {
           title: "Train Model",
-          url: "/train",
+          url: "/model/train",
+          icon: Brain,
         },
         {
           title: "Model Status",
-          url: "/status",
-        },
-        {
-          title: "Model Versions",
-          url: "versions",
+          url: "/model/status",
+          icon: Activity,
         },
       ],
     },
     {
       title: "Upgrade",
       url: "#",
+      icon: ArrowUpCircle,
       items: [
         {
           title: "Upgrade to Pro",
           url: "#",
+          icon: ArrowUpCircle,
         },
         {
           title: "View Plans",
           url: "#",
+          icon: Star,
         },
       ],
     },
@@ -127,7 +155,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={pathname === item.url}>
-                      <a href={item.url}>{item.title}</a>
+                      <a href={item.url}>
+                        <item.icon className="icon-class" />
+                        <span>{item.title}</span>
+                      </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

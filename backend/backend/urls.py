@@ -4,6 +4,7 @@ from call.urls import router as call_routers
 from django.contrib import admin
 from django.urls import include, path
 from lead.urls import router as lead_routers
+from machinelearning.urls import router as aiml_routers
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
@@ -11,6 +12,7 @@ router = DefaultRouter()
 router.registry.extend(account_routers.registry)
 router.registry.extend(call_routers.registry)
 router.registry.extend(lead_routers.registry)
+router.registry.extend(aiml_routers.registry)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

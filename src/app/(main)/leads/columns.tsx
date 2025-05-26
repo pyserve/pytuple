@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -13,8 +14,26 @@ export type Lead = {
 
 export const LeadColumns: ColumnDef<Lead>[] = [
   {
+    id: "select-col",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllRowsSelected()}
+        onClick={() =>
+          table.toggleAllRowsSelected(!table.getIsAllRowsSelected())
+        }
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        disabled={!row.getCanSelect()}
+        onChange={row.getToggleSelectedHandler()}
+      />
+    ),
+  },
+  {
     accessorKey: "id",
-    header: "#",
+    header: "Record Id",
     cell: ({ row }) => {
       const user = row.original as Lead;
 
@@ -28,6 +47,7 @@ export const LeadColumns: ColumnDef<Lead>[] = [
         </Button>
       );
     },
+    size: 100,
   },
   {
     accessorKey: "first_name",
@@ -53,16 +73,4 @@ export const LeadColumns: ColumnDef<Lead>[] = [
       return <span>{formatDate(user.created_at)}</span>;
     },
   },
-  // {
-  //   accessorKey: "action",
-  //   header: "Action",
-  //   cell: ({ row }) => {
-  //     const user = row.original as Lead;
-  //     return (
-  //       <Button>
-  //         <Phone /> Call
-  //       </Button>
-  //     );
-  //   },
-  // },
 ];

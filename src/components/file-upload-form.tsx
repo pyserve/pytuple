@@ -2,16 +2,19 @@
 import { FileUploadField } from "@/components/file-upload-field";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form";
+import api from "@/lib/api";
 import {
   UploadFileSchema,
   UploadFileSchemaType,
 } from "@/schemas/FileUploadSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileCode, Loader2, Trash, UploadCloud } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 export default function FileUploadForm() {
+  const { data: session } = useSession();
   const form = useForm<UploadFileSchemaType>({
     resolver: zodResolver(UploadFileSchema),
     defaultValues: {
@@ -22,11 +25,18 @@ export default function FileUploadForm() {
   const watchFile = form.watch("file");
 
   const onSubmit = async (values: UploadFileSchemaType) => {
+    console.log("🚀 ~ onSubmit ~ values:", values);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("🚀 ~ onSubmit ~ values:", values);
+      const formData = new FormData();
+      formData.append("file", values.file);
+      if (session?.user) {
+        formData.append("user", session?.user?.id);
+      }
+      const res = await api.post("/uploaded_files/", formData);
+      console.log("🚀 ~ onSubmit ~ res:", res);
       form.setValue("file", undefined);
       toast.success("Success!!");
+      window.location.reload();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Error");
     }

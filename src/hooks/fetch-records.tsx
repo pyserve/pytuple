@@ -1,6 +1,7 @@
+"use client";
+
 import api from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export type DataType = {
   module: string;
@@ -8,18 +9,16 @@ export type DataType = {
 };
 
 export const useFetchRecords = (data: DataType) => {
-  const { data: session } = useSession();
   return useQuery({
     queryKey: [data.module],
     queryFn: async () => {
       try {
-        const res = await api.get(`/${data.module.toLowerCase()}s/`);
+        const res = await api.get(`/${data.module}/`);
         return res.data;
       } catch (error) {
-        console.log("🚀 ~ queryFn: ~ error:", error);
         throw new Error(error instanceof Error ? error.message : "Error");
       }
     },
-    enabled: !!session,
+    placeholderData: keepPreviousData,
   });
 };

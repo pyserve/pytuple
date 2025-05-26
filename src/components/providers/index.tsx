@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { AppHeader } from "../app-header";
 import { AppSidebar } from "../app-sidebar";
 import { SidebarProvider } from "../ui/sidebar";
+import { AsyncDialogProvider } from "./alert-dialog-provider";
 import { AuthProvider } from "./auth-provider";
 import { ThemeProvider } from "./theme-provider";
 
@@ -16,17 +17,18 @@ export function MainProvider({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <SidebarProvider>
-            <AppSidebar />
-            <main className="relative w-full flex flex-col overflow-auto">
-              <AppHeader />
-              {children}
-            </main>
-          </SidebarProvider>
-        </QueryClientProvider>
-
-        <Toaster />
+        <AsyncDialogProvider>
+          <QueryClientProvider client={queryClient}>
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="relative w-full flex flex-col overflow-auto">
+                <AppHeader />
+                {children}
+              </main>
+            </SidebarProvider>
+          </QueryClientProvider>
+          <Toaster />
+        </AsyncDialogProvider>
       </AuthProvider>
     </ThemeProvider>
   );

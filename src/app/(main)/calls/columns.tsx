@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Lead } from "../leads/columns";
@@ -30,8 +31,28 @@ const colors = [
 
 export const CallColumns: ColumnDef<Call>[] = [
   {
+    id: "select-col",
+    header: ({ table }) => {
+      return (
+        <Checkbox
+          checked={table.getIsAllRowsSelected()}
+          onClick={() => {
+            return table.toggleAllRowsSelected(!table.getIsAllRowsSelected());
+          }}
+        />
+      );
+    },
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        disabled={!row.getCanSelect()}
+        onChange={row.getToggleSelectedHandler()}
+      />
+    ),
+  },
+  {
     accessorKey: "id",
-    header: "#",
+    header: "Record ID",
     cell: ({ row }) => {
       const call = row.original as Call;
 

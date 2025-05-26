@@ -6,6 +6,10 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
+.resize-handle:hover {
+  background-color: rgba(59, 130, 246, 0.7); /* blue-ish visible line */
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

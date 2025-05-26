@@ -45,7 +45,6 @@ export function LoginForm({
     console.log("Form submitted with values:", values);
     try {
       await signIn("credentials", {
-        redirect: false,
         ...values,
         callbackUrl: "/",
       });

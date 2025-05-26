@@ -1,12 +1,13 @@
 from accounts import models, serializers
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from common.views import BaseModelViewset
 from dj_rest_auth.registration.views import SocialLoginView
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, viewsets
+from rest_framework import permissions
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 
-class UserViewset(viewsets.ModelViewSet):
+class UserViewset(BaseModelViewset):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -15,7 +16,7 @@ class UserViewset(viewsets.ModelViewSet):
     search_fields = ["email", "username"]
 
 
-class RoleViewset(viewsets.ModelViewSet):
+class RoleViewset(BaseModelViewset):
     queryset = models.Role.objects.all()
     serializer_class = serializers.RoleSerializer
     permission_classes = [permissions.IsAuthenticated]
