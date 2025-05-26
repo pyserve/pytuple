@@ -10,6 +10,8 @@ export type Lead = {
   name: string;
   email: string;
   created_at: string;
+  first_name: string;
+  last_name: string;
 };
 
 export const LeadColumns: ColumnDef<Lead>[] = [
