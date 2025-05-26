@@ -47,6 +47,7 @@ export function PageLayout({
   createComponent: React.ReactNode;
   importExport?: boolean;
 }) {
+  console.log("🚀 ~ selectedRows:", selectedRows);
   const { showDialog } = useDialog();
   const massDelete = useMassDelete();
   const queryClient = useQueryClient();
@@ -68,13 +69,11 @@ export function PageLayout({
     }
   };
 
+  const justify =
+    Object.keys(selectedRows)?.length > 0 ? "justify-between" : "justify-end";
   return (
     <div className="">
-      <div
-        className={`flex items-center p-2 justify-${
-          Object.keys(selectedRows)?.length > 0 ? "between" : "end"
-        }`}
-      >
+      <div className={`flex items-center p-2 ${justify}`}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {Object.keys(selectedRows)?.length > 0 && (
