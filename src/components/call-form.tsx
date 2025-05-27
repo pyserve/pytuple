@@ -38,14 +38,20 @@ import { useFetchRecords } from "@/hooks/fetch-records";
 import { cn } from "@/lib/utils";
 import { callSchema, CallSchema } from "@/schemas/CallFormSchema";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function CallForm() {
   const [open, setOpen] = useState(false);
   const { data: leads } = useFetchRecords({
     module: "leads",
+    page: 1,
+    page_size: 200,
   });
-  const [filteredLeads, setFilteredLeads] = useState(leads ?? []);
+  const [filteredLeads, setFilteredLeads] = useState([]);
+
+  useEffect(() => {
+    setFilteredLeads(leads.results);
+  }, [leads.results]);
 
   const form = useForm<CallSchema>({
     resolver: zodResolver(callSchema),
@@ -68,7 +74,7 @@ export default function CallForm() {
           control={form.control}
           name="lead"
           render={({ field }) => {
-            const selectedLead = leads?.find(
+            const selectedLead = leads?.results?.find(
               (lead: Lead) => String(lead.id) === field.value
             );
             const label = selectedLead
@@ -97,7 +103,7 @@ export default function CallForm() {
                           placeholder="Search lead..."
                           onValueChange={(value) => {
                             setFilteredLeads(
-                              leads.filter((lead: Lead) => {
+                              leads.results?.filter((lead: Lead) => {
                                 return (
                                   lead.first_name
                                     ?.toLowerCase()

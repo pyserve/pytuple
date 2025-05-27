@@ -32,7 +32,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { List } from "lucide-react";
-import React, { useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useMemo } from "react";
 import { PageLayout } from "../page-layout";
 
 interface DataTableProps<TData, TValue> {
@@ -54,6 +55,8 @@ export function DataTable<TData, TValue>({
     pageIndex: 0,
     pageSize: 100,
   });
+  const router = useRouter();
+  const pathname = usePathname();
   const { data: data } = useFetchRecords({
     module,
     page: pagination.pageIndex + 1,
@@ -70,6 +73,12 @@ export function DataTable<TData, TValue>({
     if (data?.count === undefined) return -1;
     return Math.ceil(data?.count / pagination.pageSize);
   }, [data?.count, pagination.pageSize]);
+
+  useEffect(() => {
+    router.push(
+      `${pathname}?${pagination.pageIndex + 1}&page_size=${pagination.pageSize}`
+    );
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   const table = useReactTable({
     data: data?.results ?? [],
@@ -174,7 +183,9 @@ export function DataTable<TData, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    className={row.getIsSelected() ? "selected" : ""}
+                    className={`group hover:bg-gray-50 group-focus-within:bg-gray-50 transition-colors duration-200 ${
+                      row.getIsSelected() ? "selected" : ""
+                    }`}
                     onClick={row.getToggleSelectedHandler()}
                   >
                     {row.getVisibleCells().map((cell) => (

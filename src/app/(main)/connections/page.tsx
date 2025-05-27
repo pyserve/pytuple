@@ -15,7 +15,7 @@ export default function ConnectedApps() {
         <ConnectedAppCard
           key={app.id}
           app={app}
-          connections={connections || []}
+          connections={connections?.results || []}
         />
       ))}
     </div>

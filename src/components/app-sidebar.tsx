@@ -19,9 +19,12 @@ import {
   BookOpen,
   Brain,
   CreditCard,
+  HelpCircleIcon,
   LayoutDashboard,
   Link,
   PhoneCall,
+  SearchIcon,
+  SettingsIcon,
   Star,
   Upload,
   Users,
@@ -30,6 +33,11 @@ import { usePathname } from "next/navigation";
 
 const data = {
   versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
   navMain: [
     {
       title: "Getting Started",
@@ -121,15 +129,32 @@ const data = {
       items: [
         {
           title: "Upgrade to Pro",
-          url: "#",
+          url: "/plans/upgrade",
           icon: ArrowUpCircle,
         },
         {
           title: "View Plans",
-          url: "#",
+          url: "/plans",
           icon: Star,
         },
       ],
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Settings",
+      url: "#",
+      icon: SettingsIcon,
+    },
+    {
+      title: "Get Help",
+      url: "#",
+      icon: HelpCircleIcon,
+    },
+    {
+      title: "Search",
+      url: "#",
+      icon: SearchIcon,
     },
   ],
 };

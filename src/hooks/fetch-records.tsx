@@ -16,9 +16,22 @@ export const useFetchRecords = (data: DataType) => {
     queryKey: [module, page, page_size],
     queryFn: async () => {
       try {
-        const res = await api.get(
-          `/${module}/?page=${page}&page_size=${page_size}`
-        );
+        const url =
+          `/${module}/` +
+          ([
+            page !== undefined ? `page=${page}` : "",
+            page_size !== undefined ? `page_size=${page_size}` : "",
+          ]
+            .filter(Boolean)
+            .join("&")
+            ? `?${[
+                page !== undefined ? `page=${page}` : "",
+                page_size !== undefined ? `page_size=${page_size}` : "",
+              ]
+                .filter(Boolean)
+                .join("&")}`
+            : "");
+        const res = await api.get(url);
         return res.data;
       } catch (error) {
         throw new Error(error instanceof Error ? error.message : "Error");

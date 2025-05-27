@@ -129,9 +129,9 @@ export default function ModelTrainForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {uploadedFiles?.map((file: UploadedFile) => (
+                    {uploadedFiles?.results?.map((file: UploadedFile) => (
                       <SelectItem key={file.id} value={String(file.id)}>
-                        {file.file}
+                        {file?.file?.split("/")?.slice(-1)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -159,7 +159,7 @@ export default function ModelTrainForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {apiCredentials?.map((cred: any) => (
+                    {apiCredentials?.results?.map((cred: any) => (
                       <SelectItem key={cred.id} value={String(cred.id)}>
                         {cred.provider} ({cred.key})
                       </SelectItem>

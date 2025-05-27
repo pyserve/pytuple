@@ -42,13 +42,31 @@ export const CallColumns: ColumnDef<Call>[] = [
         />
       );
     },
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        disabled={!row.getCanSelect()}
-        onChange={row.getToggleSelectedHandler()}
-      />
-    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex gap-2 items-center">
+          {/* <DropdownMenu>
+            <DropdownMenuTrigger>
+              <MoreHorizontal className="h-4 w-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Edit /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Trash2 /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> */}
+
+          <Checkbox
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onChange={row.getToggleSelectedHandler()}
+          />
+        </div>
+      );
+    },
   },
   {
     accessorKey: "id",
