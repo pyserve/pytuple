@@ -45,6 +45,7 @@ export default function CallForm() {
   const { data: leads } = useFetchRecords({
     module: "leads",
   });
+  const [filteredLeads, setFilteredLeads] = useState(leads ?? []);
 
   const form = useForm<CallSchema>({
     resolver: zodResolver(callSchema),
@@ -91,12 +92,28 @@ export default function CallForm() {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="p-0">
-                      <Command>
-                        <CommandInput placeholder="Search lead..." />
+                      <Command shouldFilter={false}>
+                        <CommandInput
+                          placeholder="Search lead..."
+                          onValueChange={(value) => {
+                            setFilteredLeads(
+                              leads.filter((lead: Lead) => {
+                                return (
+                                  lead.first_name
+                                    ?.toLowerCase()
+                                    ?.includes(value.toLowerCase()) ||
+                                  lead.last_name
+                                    ?.toLowerCase()
+                                    ?.includes(value.toLowerCase())
+                                );
+                              })
+                            );
+                          }}
+                        />
                         <CommandList>
                           <CommandEmpty>No lead found.</CommandEmpty>
                           <CommandGroup>
-                            {leads?.map((lead: Lead) => {
+                            {filteredLeads?.map((lead: Lead) => {
                               const displayName = `${lead.first_name} ${lead.last_name}`;
                               return (
                                 <CommandItem

@@ -95,11 +95,11 @@ export function PageLayout({
           {importExport && (
             <>
               <Button variant="outline">
-                <Upload className="h-4 w-4" />
+                <Download className="h-4 w-4" />
                 Import
               </Button>
               <Button variant="outline">
-                <Download className="h-4 w-4" />
+                <Upload className="h-4 w-4" />
                 Export
               </Button>
             </>

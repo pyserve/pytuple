@@ -36,7 +36,7 @@ export const UploadedFileColumns: ColumnDef<UploadedFile>[] = [
   },
   {
     accessorKey: "id",
-    header: "#",
+    header: "Record ID",
     cell: ({ row }) => {
       const call = row.original as UploadedFile;
 

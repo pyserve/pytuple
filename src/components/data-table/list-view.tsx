@@ -100,7 +100,7 @@ export function DataTable<TData, TValue>({
       { length: endPage - startPage + 1 },
       (_, i) => startPage + i
     );
-  }, [pagination.pageIndex, table.getPageCount()]);
+  }, [table, pagination.pageIndex]);
 
   return (
     <PageLayout
@@ -118,11 +118,10 @@ export function DataTable<TData, TValue>({
                 <TableRow key={headerGroup.id} className="">
                   {headerGroup.headers.map((header, index) => {
                     const disableSorting = index === 0 || index === 1;
-
                     return (
                       <TableHead
                         key={header.id}
-                        className="px-6 py-4 text-xs font-semibold text-gray-900 uppercase relative hover:border-r-2 hover:border-gray-300"
+                        className="px-6 py-4 text-xs font-semibold text-gray-900 uppercase relative"
                         onClick={header.column.getToggleSortingHandler()}
                         style={{ width: header.getSize() }}
                       >
@@ -143,7 +142,7 @@ export function DataTable<TData, TValue>({
                             </span>
                           )}
                         </div>
-                        <div
+                        {/* <div
                           {...{
                             onMouseDown: header.getResizeHandler(),
                             onTouchStart: header.getResizeHandler(),
@@ -154,7 +153,7 @@ export function DataTable<TData, TValue>({
                               zIndex: 10,
                             },
                           }}
-                        />
+                        /> */}
                       </TableHead>
                     );
                   })}
