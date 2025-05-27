@@ -47,7 +47,6 @@ export function PageLayout({
   createComponent: React.ReactNode;
   importExport?: boolean;
 }) {
-  console.log("🚀 ~ selectedRows:", selectedRows);
   const { showDialog } = useDialog();
   const massDelete = useMassDelete();
   const queryClient = useQueryClient();

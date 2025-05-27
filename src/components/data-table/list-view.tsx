@@ -25,7 +25,6 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
   RowSelectionState,
@@ -51,24 +50,32 @@ export function DataTable<TData, TValue>({
   module,
   createComponent,
 }: DataTableProps<TData, TValue>) {
-  const { data: data } = useFetchRecords({
-    module,
-  });
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 20,
+    pageSize: 100,
+  });
+  const { data: data } = useFetchRecords({
+    module,
+    page: pagination.pageIndex + 1,
+    page_size: pagination.pageSize,
   });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnSizing, setcolumnSizing] = React.useState<{
     [key: string]: number;
   }>({});
+
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
+  const pageCount = useMemo(() => {
+    if (data?.count === undefined) return -1;
+    return Math.ceil(data?.count / pagination.pageSize);
+  }, [data?.count, pagination.pageSize]);
+
   const table = useReactTable({
-    data: data ?? [],
+    data: data?.results ?? [],
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     state: {
       pagination,
@@ -80,15 +87,17 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnSizingChange: setcolumnSizing,
     onRowSelectionChange: setRowSelection,
-    getRowId: (row: TData) => row.id,
+    getRowId: (row: TData) => (row as Record<string, string>).id,
     enableSorting: true,
     enableRowSelection: true,
     enableMultiRowSelection: true,
     enableColumnResizing: true,
+    manualPagination: true,
+    pageCount: pageCount,
   });
 
   const pageNumbers = useMemo(() => {
-    const totalPages = table.getPageCount();
+    const totalPages = pageCount;
     const currentPage = pagination.pageIndex;
     const maxPageNumbers = 3;
     let startPage = Math.max(0, currentPage - Math.floor(maxPageNumbers / 2));
@@ -100,7 +109,7 @@ export function DataTable<TData, TValue>({
       { length: endPage - startPage + 1 },
       (_, i) => startPage + i
     );
-  }, [table, pagination.pageIndex]);
+  }, [pagination.pageIndex, pageCount]);
 
   return (
     <PageLayout
@@ -210,11 +219,7 @@ export function DataTable<TData, TValue>({
                   <span className="font-medium">
                     {table.getRowModel().rows.length.toLocaleString()}
                   </span>{" "}
-                  of{" "}
-                  <span className="font-medium">
-                    {table.getRowCount().toLocaleString()}
-                  </span>{" "}
-                  row(s)
+                  of <span className="font-medium">{data?.count}</span> row(s)
                 </div>
               </div>
             </PaginationContent>
