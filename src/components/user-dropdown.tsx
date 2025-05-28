@@ -21,13 +21,13 @@ export function UserDropdown() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-2 outline-none">
-        <Avatar>
+      <DropdownMenuTrigger className="flex items-center outline-none">
+        <Avatar className="w-7 h-7 rounded-md">
           <AvatarImage
             src={session?.user?.image || undefined}
             alt={session?.user?.name || session?.user?.email || ""}
           />
-          <AvatarFallback className="">
+          <AvatarFallback>
             {session?.user?.name?.charAt(0)?.toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>

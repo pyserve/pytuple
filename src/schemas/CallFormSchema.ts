@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const callSchema = z.object({
-  lead: z.string({ required_error: "Lead ID is required" }),
+  lead_id: z.string({ required_error: "Lead ID is required" }),
 
   call_type: z.enum(["incoming", "outgoing"], {
     required_error: "Call type is required",

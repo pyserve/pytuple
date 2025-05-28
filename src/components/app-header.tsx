@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { BellIcon } from "lucide-react";
+import { BellIcon, Moon, Settings2 } from "lucide-react";
 import { UserDropdown } from "./user-dropdown";
 
 export function AppHeader() {
@@ -16,11 +16,19 @@ export function AppHeader() {
           className="w-[250px] md:w-[300px]"
         />
       </div>
-      <div className="flex gap-2 items-center">
-        <div className="bg-gray-50 rounded-full p-2">
+      <div className="flex gap-4 items-center">
+        <div className="bg-gray-50 p-2 rounded-md hover:bg-gray-200">
+          <Moon size={18} />
+        </div>
+        <div className="bg-gray-50 p-2 rounded-md hover:bg-gray-200">
           <BellIcon size={18} />
         </div>
-        <UserDropdown />
+        <div className="bg-gray-50 p-2 rounded-md hover:bg-gray-200">
+          <Settings2 size={18} />
+        </div>
+        <div className="bg-gray-50 rounded-md hover:bg-gray-200">
+          <UserDropdown />
+        </div>
       </div>
     </header>
   );

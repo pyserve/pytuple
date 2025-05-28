@@ -34,14 +34,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateRecord } from "@/hooks/create-records";
 import { useFetchRecords } from "@/hooks/fetch-records";
 import { cn } from "@/lib/utils";
 import { callSchema, CallSchema } from "@/schemas/CallFormSchema";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function CallForm() {
   const [open, setOpen] = useState(false);
+  const createRecord = useCreateRecord();
   const { data: leads } = useFetchRecords({
     module: "leads",
     page: 1,
@@ -50,8 +53,8 @@ export default function CallForm() {
   const [filteredLeads, setFilteredLeads] = useState([]);
 
   useEffect(() => {
-    setFilteredLeads(leads.results);
-  }, [leads.results]);
+    setFilteredLeads(leads?.results);
+  }, [leads?.results]);
 
   const form = useForm<CallSchema>({
     resolver: zodResolver(callSchema),
@@ -60,8 +63,18 @@ export default function CallForm() {
     },
   });
 
-  const onSubmit = (data: CallSchema) => {
-    console.log("Submitted Data:", data);
+  const onSubmit = async (data: CallSchema) => {
+    try {
+      const res = await createRecord.mutateAsync({
+        module: "calls",
+        data: data,
+      });
+      console.log("🚀 ~ onSubmit ~ res:", res);
+      toast.success("Record created!");
+      window.location.reload();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Error");
+    }
   };
 
   return (
@@ -72,7 +85,7 @@ export default function CallForm() {
       >
         <FormField
           control={form.control}
-          name="lead"
+          name="lead_id"
           render={({ field }) => {
             const selectedLead = leads?.results?.find(
               (lead: Lead) => String(lead.id) === field.value
@@ -103,7 +116,7 @@ export default function CallForm() {
                           placeholder="Search lead..."
                           onValueChange={(value) => {
                             setFilteredLeads(
-                              leads.results?.filter((lead: Lead) => {
+                              leads?.results?.filter((lead: Lead) => {
                                 return (
                                   lead.first_name
                                     ?.toLowerCase()

@@ -26,7 +26,7 @@ export const useUpdateRecord = () =>
     mutationKey: [],
     mutationFn: async (data: MassDeleteData) => {
       try {
-        const res = await api.post(`/${data.module}/mass_delete/`, {
+        const res = await api.post(`/${data.module}/`, {
           ids: data.ids,
         });
         console.log("🚀 ~ mutationFn: ~ res:", res);

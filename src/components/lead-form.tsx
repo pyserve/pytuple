@@ -19,9 +19,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateRecord } from "@/hooks/create-records";
 import { leadSchema, LeadSchema } from "@/schemas/LeadFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 const SOURCE_CHOICES = [
   { value: "website", label: "Website" },
@@ -50,13 +52,26 @@ const STATUS_CHOICES = [
 ];
 
 export default function LeadForm() {
+  const createRecord = useCreateRecord();
   const form = useForm<LeadSchema>({
     resolver: zodResolver(leadSchema),
   });
 
-  const onSubmit = (data: LeadSchema) => {
-    console.log(data);
+  const onSubmit = async (data: LeadSchema) => {
+    try {
+      const res = await createRecord.mutateAsync({
+        module: "leads",
+        data: data,
+      });
+      console.log("🚀 ~ onSubmit ~ res:", res);
+      toast.success("Record created!");
+      window.location.reload();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Error");
+    }
   };
+
+  console.log("🚀 ~ LeadForm ~ form.errors:", form.formState.errors);
 
   return (
     <Form {...form}>

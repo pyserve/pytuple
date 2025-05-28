@@ -49,8 +49,8 @@ export const authOptions: NextAuthOptions = {
             }
           );
           return {
-            token: res.data?.token,
-            ...res1.data?.[0],
+            token: res.data?.results?.token,
+            ...res1.data?.results?.[0],
           };
         }
         return null;
@@ -85,7 +85,7 @@ export const authOptions: NextAuthOptions = {
             );
             return {
               ...token,
-              id: res1.data?.[0].id || user.id,
+              id: res1.data?.results?.[0].id || user.id,
               accessToken: res.data?.key || res.data?.token,
               name: user.name,
               email: user.email,

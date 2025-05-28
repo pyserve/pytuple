@@ -226,9 +226,9 @@ export function DataTable<TData, TValue>({
                   </strong>
                 </div>
                 <div className="text-xs hidden sm:block">
-                  Showing{" "}
+                  Selected{" "}
                   <span className="font-medium">
-                    {table.getRowModel().rows.length.toLocaleString()}
+                    {Object.keys(rowSelection)?.length ?? 0}
                   </span>{" "}
                   of <span className="font-medium">{data?.count}</span> row(s)
                 </div>

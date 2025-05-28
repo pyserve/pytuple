@@ -25,7 +25,6 @@ import {
   PhoneCall,
   SearchIcon,
   SettingsIcon,
-  Star,
   Upload,
   Users,
 } from "lucide-react";
@@ -128,14 +127,9 @@ const data = {
       icon: ArrowUpCircle,
       items: [
         {
-          title: "Upgrade to Pro",
-          url: "/plans/upgrade",
-          icon: ArrowUpCircle,
-        },
-        {
-          title: "View Plans",
+          title: "Upgrade Plan",
           url: "/plans",
-          icon: Star,
+          icon: ArrowUpCircle,
         },
       ],
     },
