@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCreateRecord } from "@/hooks/create-records";
 import { leadSchema, LeadSchema } from "@/schemas/LeadFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -256,8 +257,15 @@ export default function LeadForm() {
           )}
         />
 
-        <Button type="submit" className="w-full">
-          Submit
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </Form>

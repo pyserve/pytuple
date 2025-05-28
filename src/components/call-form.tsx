@@ -38,7 +38,7 @@ import { useCreateRecord } from "@/hooks/create-records";
 import { useFetchRecords } from "@/hooks/fetch-records";
 import { cn } from "@/lib/utils";
 import { callSchema, CallSchema } from "@/schemas/CallFormSchema";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -67,7 +67,10 @@ export default function CallForm() {
     try {
       const res = await createRecord.mutateAsync({
         module: "calls",
-        data: data,
+        data: {
+          ...data,
+          lead_id: parseInt(data.lead_id),
+        },
       });
       console.log("🚀 ~ onSubmit ~ res:", res);
       toast.success("Record created!");
@@ -139,7 +142,7 @@ export default function CallForm() {
                                   key={lead.id}
                                   value={String(lead.id)}
                                   onSelect={() => {
-                                    form.setValue("lead", String(lead.id));
+                                    form.setValue("lead_id", String(lead.id));
                                     setOpen(false);
                                   }}
                                 >
@@ -246,7 +249,16 @@ export default function CallForm() {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Submit"
+          )}
+        </Button>
       </form>
     </Form>
   );

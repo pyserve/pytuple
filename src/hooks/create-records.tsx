@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 
 type CreateData = {
   module: string;
-  data: Record<string, string>;
+  data: Record<string, any>;
 };
 
 export const useCreateRecord = () => {
