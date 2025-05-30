@@ -129,7 +129,7 @@ export function DataTable<TData, TValue>({
       importExport
     >
       <div className="relative flex flex-col">
-        <div className="relative h-[79vh] w-full overflow-hidden overflow-x-auto overflow-y-scroll">
+        <div className="relative h-[76vh] w-full overflow-hidden overflow-x-auto overflow-y-scroll">
           <table className="w-full text-sm">
             <TableHeader className="bg-gray-100 shadow-sm sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (

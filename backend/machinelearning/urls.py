@@ -5,3 +5,4 @@ router = DefaultRouter()
 router.register("uploaded_files", views.UserUploadedFileViewset)
 router.register("api_credentials", views.APICredentialViewset)
 router.register("models", views.AIModelViewset)
+router.register("query", views.QueryViewset, basename="query"),

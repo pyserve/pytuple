@@ -6,9 +6,11 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export interface UploadedFile {
   id: string;
+  name: string;
   file: string;
   description: string | null;
   file_type: string | null;
+  file_size: string | null;
   user: number;
   uploaded_at: string;
 }
@@ -50,6 +52,14 @@ export const UploadedFileColumns: ColumnDef<UploadedFile>[] = [
         </Button>
       );
     },
+  },
+  {
+    accessorKey: "name",
+    header: "Filename",
+  },
+  {
+    accessorKey: "file_size",
+    header: "File Size (B)",
   },
   {
     accessorKey: "file",

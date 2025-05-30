@@ -11,7 +11,7 @@ class UserUploadedFile(models.Model):
         related_name="uploaded_files",
         help_text="The user who uploaded this file.",
     )
-
+    name = models.CharField(max_length=255, null=True, blank=True)
     file = models.FileField(
         upload_to="uploads/files/",
         help_text="The user-uploaded file for model training.",
@@ -34,6 +34,8 @@ class UserUploadedFile(models.Model):
         help_text="The type of the file (e.g., CSV, JSON, Image, Text).",
     )
 
+    file_size = models.BigIntegerField(blank=True, null=True)
+
     def save(self, *args, **kwargs):
         if not self.file_type and self.file:
             extension = self.file.name.split(".")[-1].lower()
@@ -41,6 +43,8 @@ class UserUploadedFile(models.Model):
                 self.file_type = extension
             else:
                 self.file_type = "other"
+            self.name = self.file.name
+            self.file_size = self.file.size
         super().save(*args, **kwargs)
 
 

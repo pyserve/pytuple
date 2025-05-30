@@ -131,7 +131,7 @@ export default function ModelTrainForm() {
                   <SelectContent>
                     {uploadedFiles?.results?.map((file: UploadedFile) => (
                       <SelectItem key={file.id} value={String(file.id)}>
-                        {file?.file?.split("/")?.slice(-1)}
+                        {file?.name} ({file.file_size} Bytes)
                       </SelectItem>
                     ))}
                   </SelectContent>
