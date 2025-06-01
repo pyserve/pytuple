@@ -1,9 +1,13 @@
 import os
+import shutil
 from pathlib import Path
 from typing import Any, Dict, List
 
+from django.conf import settings
+from langchain.schema import Document
 from langchain_community.document_loaders import (
     DirectoryLoader,
+    PyPDFLoader,
     TextLoader,
     UnstructuredFileLoader,
 )
@@ -23,8 +27,7 @@ class RAGPipeline:
 
     def _initialize(self, data_dir: str = None):
         if data_dir is None:
-            base_dir = os.path.dirname(os.path.abspath(__file__))
-            self.data_dir = os.path.join(base_dir, "datasets")
+            self.data_dir = os.path.join(settings.MEDIA_ROOT, "uploads", "files")
         else:
             self.data_dir = data_dir
 
@@ -50,8 +53,21 @@ class RAGPipeline:
         self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": 3})
 
     def _build_index(self):
-        loader = DirectoryLoader(self.data_dir, glob="**/*.*")
-        documents = loader.load()
+        # loader = DirectoryLoader(self.data_dir, glob="**/*.*")
+        txt_loader = DirectoryLoader(
+            self.data_dir, glob="**/*.txt", loader_cls=TextLoader
+        )
+        pdf_loader = DirectoryLoader(
+            self.data_dir, glob="**/*.pdf", loader_cls=PyPDFLoader
+        )
+        txt_docs = txt_loader.load()
+        pdf_docs = pdf_loader.load()
+        sys_docs = Document(
+            page_content="Please upload documents for processing.",
+            metadata={"source": "system"},
+        )
+        documents = txt_docs + pdf_docs
+        documents.append(sys_docs)
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=64)
         texts = text_splitter.split_documents(documents)
         self.vectorstore = FAISS.from_documents(texts, self.embeddings)
@@ -70,7 +86,6 @@ class RAGPipeline:
 
     def add_document(self, file_path: str) -> bool:
         try:
-            # Determine file type and use appropriate loader
             if file_path.endswith(".txt"):
                 loader = TextLoader(file_path)
             else:
@@ -88,8 +103,6 @@ class RAGPipeline:
                 self.vectorstore.add_documents(texts)
 
             self.vectorstore.save_local("faiss_index")
-
-            # Move file to persistent storage
             filename = os.path.basename(file_path)
             dest_path = os.path.join(self.data_dir, filename)
             os.rename(file_path, dest_path)
@@ -106,3 +119,16 @@ class RAGPipeline:
             for f in os.listdir(self.data_dir)
             if os.path.isfile(os.path.join(self.data_dir, f))
         ]
+
+    @classmethod
+    def reset_instance(cls):
+        cls._instance = None
+        if os.path.exists("faiss_index"):
+            shutil.rmtree("faiss_index")
+            print("FAISS index cleared.")
+        cls.vectorstore = None
+        cls.retriever = None
+
+
+RAGPipeline.reset_instance()
+rag_pipeline = RAGPipeline()

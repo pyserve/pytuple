@@ -13,7 +13,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-  Activity,
   ArrowUpCircle,
   BarChart2,
   BookOpen,
@@ -105,19 +104,14 @@ const data = {
       icon: Brain,
       items: [
         {
-          title: "Upload Files",
+          title: "Documents",
           url: "/upload",
           icon: Upload,
         },
         {
-          title: "Train Model",
-          url: "/model/train",
+          title: "Chat with AI",
+          url: "/chat",
           icon: Brain,
-        },
-        {
-          title: "Model Status",
-          url: "/model/status",
-          icon: Activity,
         },
       ],
     },

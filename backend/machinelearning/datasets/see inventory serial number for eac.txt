@@ -1,9 +1,0 @@
-see inventory serial number for each category, brand and size
-pending item to be assigned to installations but job already completed
-click is not working properly
-Email sent to technician to javid as well
-Assign Javid to Mobile App Zoho CRM
-
-
-figure out the hosting from them and create our own hosting
-verify the incomplete POs and remaining inventory items.

@@ -31,21 +31,21 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "corsheaders",
     "rest_framework",
-    "django_filters",
-    "dj_rest_auth",
-    "dj_rest_auth.registration",
     "rest_framework.authtoken",
+    "django_filters",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
     "accounts.apps.AccountsConfig",
     "common.apps.CommonConfig",
     "lead.apps.LeadConfig",
     "call.apps.CallConfig",
     "analytics.apps.AnalyticsConfig",
-    "djangoseed.apps.DjangoseedConfig",
     "machinelearning.apps.MachinelearningConfig",
+    "djangoseed.apps.DjangoseedConfig",
 ]
 
 SITE_ID = 1
@@ -58,6 +58,12 @@ SOCIALACCOUNT_PROVIDERS = {
             "key": "",
         },
     }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
 }
 
 AUTH_USER_MODEL = "accounts.User"

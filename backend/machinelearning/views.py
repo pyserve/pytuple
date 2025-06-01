@@ -1,16 +1,14 @@
-import json
 import os
 
 import requests
+from common.views import BaseModelViewset
 from dotenv import load_dotenv
-from huggingface_hub import login
+from machinelearning import models, serializers
+from machinelearning.pipeline import rag_pipeline
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
-
-from common.views import BaseModelViewset
-from machinelearning import models, pipeline, serializers
 
 load_dotenv()
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
@@ -54,27 +52,24 @@ class AIModelViewset(BaseModelViewset):
 class QueryViewset(viewsets.ViewSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.rag = pipeline.RAGPipeline()
 
     def list(self, request):
         return Response({"request": []})
 
-    @action(detail=False, methods=["post"], url_path="query")
-    def query(self, request):
+    @action(detail=False, methods=["post"], url_path="chat")
+    def chat(self, request):
         user_query = request.data.get("query")
         if not user_query:
-            return Response({"error": "No query provided."}, status=400)
+            return Response(
+                {"error": "No query provided."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        context_results = self.rag.retrieve(user_query)
+        context_results = rag_pipeline.retrieve(user_query)
         contexts = [res["content"] for res in context_results]
         prompt = f"""
-        Use the following context to answer the question. If the context doesn't contain the answer, say you don't know.
-        
-        Context:
-        {''.join(contexts)}
-        
-        Question: {user_query}
-        Answer:
+            Context: {''.join(contexts)}
+            Question: {user_query}
+            Answer:
         """
 
         response = requests.post(
@@ -83,7 +78,6 @@ class QueryViewset(viewsets.ViewSet):
                 "model": "gemma3:1b",
                 "prompt": prompt,
                 "stream": False,
-                # "context": contexts,
             },
             timeout=30,
         )

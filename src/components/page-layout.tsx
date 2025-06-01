@@ -107,7 +107,7 @@ export function PageLayout({
             <SheetTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4" />
-                Create New
+                Create
               </Button>
             </SheetTrigger>
             <SheetContent className="min-w-1/2">
