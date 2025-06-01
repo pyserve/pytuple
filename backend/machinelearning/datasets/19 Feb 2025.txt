@@ -1,0 +1,36 @@
+review for inventory triggers email or setup meetings - add prabin to group
+crm -> Google Calls, Google SMS integration to CRM call gain
+put video or LMS -> 
+Job  - put type of Rebate - type and sub-types(put it in the same tickets)
+home rennovation -> Retro fit, hp sizing (sub-type)
+send email to cindy
+google appointment app sync it with Google
+transfer other option calls to someone - next call
+Meet for ringcentral calls - connect IP desk phone
+air.ai call lead within 60 seconds - March 3
+
+
+FOR CCHS 1
+1> all of operations + customer service goes call to 
+2> add call dashboard from ring central
+3> no option for voice mail after work hours
+11-7 operation goes to customer service after waiting some minutes, 8-11 customer service, 7-9AM customer service, 
+4> Also add wait time for each calls
+transition for Gmail, CRM, Ringcentral, etc should be fixed from it. Transfer the number from same department to new people in same department
+
+Solutions
+1> Transfer or Assigned to someone - check all old phones, reassigned, call forward to line 1(everyone in the office)  after they choose CCHS or Weaver.
+2> Forwarding number as like Gmail
+Call customer support to provide live wait time for a caller plus increase wait time to 15 min and voicemail
+option2 -> service call -> keep it to customer service for 5 min -> no voicemail
+option2 -> after wait time leave your number so we can call you back
+customer press 1 -> announcement to customers -> 
+-> direct call voicemail report to Mujeeb -> 
+reports only for direct number
+email for Gina
+
+add shipping to solution cost
+remove 5 years
+
+
+

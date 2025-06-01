@@ -1,0 +1,61 @@
+Jan 08 2025 Notes
+
+media, moovair from master
+battery technology
+
+technical knowledge to the sales agent
+inventory management alert for robust
+
+documentation, alert systems and emails, marketing emails, IT security
+baseline and predictions based on sales 
+
+a report per product inventory consumption details - 1 week for baseline should cover the product category and size
+month by month report,
+
+canceled tickets - amount
+2nd audit pending not showing up
+
+video and documentation for operation process.
+
+virtual selling
+Ac model versus 
+
+No sign for internal people
+name and position, automated zone and postal code for Ontario
+management review for no code present
+
+Date => Pay Period, 
+Total Monthly Sales and Total Jobs Closed => Remove
+Add Comission Tier
+Oversold/Undersold => color coding
+List price => Sold Price
+Each job should have travel cost in breakdown
+dropdown to cx compensation title and can help in analytics later, mutual release only for buyout compensation, ask mujee about cases for mutual release
+company portion is deducted from agent
+
+Sales agent separate table for breakdown for each cost => missing it just like a technician
+add travel charges to sales Agent block -  need extra field for travel charges for sales agent 
+paper and electronic documentation for CCHS sales.
+
+savings must be calculated based on heat pump - top savings
+logos for rebate 
+apply button only one => Get Started, select a program to apply
+upto total for each product
+
+Heat pump => 
+heating bill => gas X 0.3 
+upto 300$ HWH
+Attic insulation and Air sealing => 
+thermostat =>
+
+
+
+
+
+
+
+
+
+
+
+

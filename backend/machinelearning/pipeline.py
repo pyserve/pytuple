@@ -1,111 +1,108 @@
 import os
+from pathlib import Path
+from typing import Any, Dict, List
 
-from langchain.chains import RetrievalQA
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import TextLoader
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.llms import HuggingFacePipeline
-from langchain_community.vectorstores import Qdrant
-from qdrant_client import QdrantClient
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from langchain_community.document_loaders import (
+    DirectoryLoader,
+    TextLoader,
+    UnstructuredFileLoader,
+)
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 class RAGPipeline:
-    def __init__(
-        self,
-        hf_token: str,
-        model_id: str = "meta-llama/Llama-2-7b-chat-hf",
-        embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
-        qdrant_host: str = "localhost",
-        collection_name: str = "my_collection",
-        qdrant_port: int = 6333,
-        chunk_size: int = 500,
-        chunk_overlap: int = 50,
-        max_length: int = 512,
-        temperature: float = 0.7,
-        retriever_k: int = 3,
-    ):
-        self.hf_token = hf_token
-        self.model_id = model_id
-        self.embedding_model_name = embedding_model_name
-        self.qdrant_host = qdrant_host
-        self.qdrant_port = qdrant_port
-        self.collection_name = collection_name
-        self.chunk_size = chunk_size
-        self.chunk_overlap = chunk_overlap
-        self.max_length = max_length
-        self.temperature = temperature
-        self.retriever_k = retriever_k
+    _instance = None
 
-        self._vectorstore = None
-        self._llm = None
-        self._qa_chain = None
+    def __new__(cls, data_dir: str = None):
+        if cls._instance is None:
+            cls._instance = super(RAGPipeline, cls).__new__(cls)
+            cls._instance._initialize(data_dir)
+        return cls._instance
 
-    def _init_llm(self):
-        print(f"🔹 Loading LLM model: {self.model_id}")
-        tokenizer = AutoTokenizer.from_pretrained(self.model_id, token=self.hf_token)
-        model = AutoModelForCausalLM.from_pretrained(
-            self.model_id, device_map="auto", token=self.hf_token
-        )
-        pipe = pipeline(
-            "text-generation",
-            model=model,
-            tokenizer=tokenizer,
-            max_length=self.max_length,
-            temperature=self.temperature,
-        )
-        self._llm = HuggingFacePipeline(pipeline=pipe)
+    def _initialize(self, data_dir: str = None):
+        if data_dir is None:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            self.data_dir = os.path.join(base_dir, "datasets")
+        else:
+            self.data_dir = data_dir
 
-    def _init_vectorstore(self):
-        print(f"🔹 Loading embeddings: {self.embedding_model_name}")
-        try:
-            embedding_model = HuggingFaceEmbeddings(
-                model_name=self.embedding_model_name,
-                huggingfacehub_api_token=self.hf_token,
-            )
-        except Exception as e:
-            print(f"❗️ Could not load embeddings: {e}")
-            raise e
+        os.makedirs(self.data_dir, exist_ok=True)
 
-        client = QdrantClient(host=self.qdrant_host, port=self.qdrant_port)
-        self._vectorstore = Qdrant(
-            client=client,
-            collection_name=self.collection_name,
-            embeddings=embedding_model,
-        )
+        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self.vectorstore = None
+        self.retriever = None
+        self._load_or_create_index()
 
-    def load_and_store_docs(self, file_path: str):
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
-        print(f"📄 Loading file: {file_path}")
-        loader = TextLoader(file_path)
+    def _load_or_create_index(self):
+        if os.path.exists("faiss_index"):
+            try:
+                self.vectorstore = FAISS.load_local(
+                    "faiss_index", self.embeddings, allow_dangerous_deserialization=True
+                )
+            except Exception as e:
+                print(f"Error loading index, rebuilding: {e}")
+                self._build_index()
+        else:
+            self._build_index()
+
+        self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": 3})
+
+    def _build_index(self):
+        loader = DirectoryLoader(self.data_dir, glob="**/*.*")
         documents = loader.load()
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=64)
+        texts = text_splitter.split_documents(documents)
+        self.vectorstore = FAISS.from_documents(texts, self.embeddings)
+        self.vectorstore.save_local("faiss_index")
 
-        splitter = RecursiveCharacterTextSplitter(
-            chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap
-        )
-        docs = splitter.split_documents(documents)
+    def retrieve(self, query: str) -> List[Dict[str, Any]]:
+        docs = self.retriever.invoke(query)
+        return [
+            {
+                "content": doc.page_content,
+                "metadata": doc.metadata,
+                "score": doc.metadata.get("score", 0.0),
+            }
+            for doc in docs
+        ]
 
-        if self._vectorstore is None:
-            self._init_vectorstore()
-        print(f"🔸 Adding {len(docs)} documents to Qdrant")
-        self._vectorstore.add_documents(docs)
+    def add_document(self, file_path: str) -> bool:
+        try:
+            # Determine file type and use appropriate loader
+            if file_path.endswith(".txt"):
+                loader = TextLoader(file_path)
+            else:
+                loader = UnstructuredFileLoader(file_path)
 
-    def get_qa_chain(self):
-        if self._vectorstore is None:
-            self._init_vectorstore()
-        if self._llm is None:
-            self._init_llm()
-        retriever = self._vectorstore.as_retriever(
-            search_kwargs={"k": self.retriever_k}
-        )
-        self._qa_chain = RetrievalQA.from_chain_type(llm=self._llm, retriever=retriever)
-        return self._qa_chain
+            doc = loader.load()
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=512, chunk_overlap=64
+            )
+            texts = text_splitter.split_documents(doc)
 
-    def answer_query(self, query: str):
-        if self._qa_chain is None:
-            self.get_qa_chain()
-        print(f"❓ Query: {query}")
-        response = self._qa_chain.run(query)
-        print(f"✅ Answer: {response}")
-        return response
+            if not self.vectorstore:
+                self.vectorstore = FAISS.from_documents(texts, self.embeddings)
+            else:
+                self.vectorstore.add_documents(texts)
+
+            self.vectorstore.save_local("faiss_index")
+
+            # Move file to persistent storage
+            filename = os.path.basename(file_path)
+            dest_path = os.path.join(self.data_dir, filename)
+            os.rename(file_path, dest_path)
+
+            return True
+        except Exception as e:
+            print(f"Error adding document: {e}")
+            return False
+
+    def get_all_documents(self) -> List[str]:
+        """List all documents in the RAG database"""
+        return [
+            f
+            for f in os.listdir(self.data_dir)
+            if os.path.isfile(os.path.join(self.data_dir, f))
+        ]

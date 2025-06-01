@@ -1,0 +1,15 @@
+add warehouse emails to it. Out of Stock immediately triggers
+more exciting SMS message for Client.
+Ring central calls dashboard common for all users and call uploaded, log into CRM, one number for all users, 
+add emails, done by today
+Heat Pump Sizing and Load Calculation rename this?
+add funding status on the job checklist
+Check if COC uploaded in CRM is synched to workdrive or not??
+uploaded with rename filename and checkmark the options
+loan number into the CRM - to Job Record
+
+Tickets Dashboard
+
+Freeze columns
+Scrolling issues in dashboard
+

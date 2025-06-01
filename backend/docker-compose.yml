@@ -1,0 +1,45 @@
+
+services:
+      
+  django:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - ollama
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=backend.settings
+      - DATABASE_URL=postgres://postgres:072bex05@db:5432/ecohomepro
+      - REDIS_URL=redis://redis:6379/0
+      - OLLAMA_URL=http://ollama:11434
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: ecohomepro
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 072bex05
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+  
+  ollama:
+    image: ollama/ollama
+    container_name: ollama-server
+    ports:
+      - "11434:11434"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,23 @@
+Summary
+calculation logic is verified and correct
+retail price = price + financing fee included -> no financing fee deduction
+oversold = without financing fee included -> here deduct financing fee on total oversold
+Check for percentage with Ali for financing fee - check value based on conditions ali give us
+lead deduction should be moved to extra expenditure.
+Travel Calculation confirmation about new formula
+Discuss about the shipping fee changing the old formula for travel cost
+discount provided - sales discount
+no  matters what final amount should not be negative - must be zero if < zero
+weaver - final payout to sales agent must deduct the payroll
+sales > base = sales
+base > sales = base
+
+column for carryforward should change -> Paid, Unpaid -> next, CarryForward -> next -> should be storeed somewhere for future reference
+
+installation payments data not updated
+product cost not implemented
+
+missing Carry forward on extra expense
+payment completed on sales agent and technician
+further verification
+7th March

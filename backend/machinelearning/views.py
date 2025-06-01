@@ -1,15 +1,19 @@
+import json
 import os
 
-from common.views import BaseModelViewset
+import requests
 from dotenv import load_dotenv
-from machinelearning import models, serializers
-from machinelearning.pipeline import RAGPipeline
+from huggingface_hub import login
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
+from common.views import BaseModelViewset
+from machinelearning import models, pipeline, serializers
+
 load_dotenv()
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 
 
 class UserUploadedFileViewset(BaseModelViewset):
@@ -48,6 +52,10 @@ class AIModelViewset(BaseModelViewset):
 
 
 class QueryViewset(viewsets.ViewSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.rag = pipeline.RAGPipeline()
+
     def list(self, request):
         return Response({"request": []})
 
@@ -57,15 +65,41 @@ class QueryViewset(viewsets.ViewSet):
         if not user_query:
             return Response({"error": "No query provided."}, status=400)
 
-        user_id = request.user.id
-        collection_name = f"user_{user_id}_collection"
-        hf_token = os.getenv("HUGGINGFACE_TOKEN")
-        try:
-            rag_pipeline = RAGPipeline(
-                hf_token=hf_token, collection_name=collection_name
-            )
-            answer = rag_pipeline.answer_query(user_query)
-        except Exception as e:
-            return Response({"error": str(e)}, status=500)
+        context_results = self.rag.retrieve(user_query)
+        contexts = [res["content"] for res in context_results]
+        prompt = f"""
+        Use the following context to answer the question. If the context doesn't contain the answer, say you don't know.
+        
+        Context:
+        {''.join(contexts)}
+        
+        Question: {user_query}
+        Answer:
+        """
 
-        return Response({"answer": answer})
+        response = requests.post(
+            f"{OLLAMA_URL}/api/generate",
+            json={
+                "model": "gemma3:1b",
+                "prompt": prompt,
+                "stream": False,
+                # "context": contexts,
+            },
+            timeout=30,
+        )
+        if response.status_code == 200:
+            data = response.json()
+            data["rag_contexts"] = [
+                {
+                    "content": res["content"],
+                    "source": res["metadata"].get("source", "unknown"),
+                    "score": res["score"],
+                }
+                for res in context_results
+            ]
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "LLM service unavailable"},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )

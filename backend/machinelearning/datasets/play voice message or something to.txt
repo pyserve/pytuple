@@ -1,0 +1,34 @@
+play voice message or something to tell customer while waiting just don't play music
+if you pass the call, do u know the data for that so that we can analyze
+add pickup date
+backorder - reflect on dashboard lead time
+equal or less than
+how many in stock and
+
+
+separate dashboard to filter with model
+automate subject come up with something unique
+mandatory for due date
+remove all other valve kits merge
+if no pricing on the system, alert for price from user to input manually and without this cannot approved
+confirmation from user about putting pricing -> responsible for it
+have send/sep button to confirm to send to supplier
+approved not submitted to supplier yes/no
+approved by no approved by in supplier
+partially received
+group subtotal price section into a page not in two pages
+reapeat the header optional in next page
+all emails should have cc accounting@ all time, to vendor email
+automatically send to supplier about partially received pos, accounting@, warehouse@
+home app
+
+Google call discuss what are the features required - how many dialer, is it go to spam calls or not, certain number of calls will trigger spams in cell network company. 
+
+warehouse orders and accounting
+send email
+pickup by date, delivered by date, returned by date
+pickedup serial number, installed serial number -> 
+add installation search field in out status when giving item to technician
+
+
+rebate required -> no tickets for it or cancel it automatically

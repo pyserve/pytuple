@@ -1,0 +1,44 @@
+1. Agent Discount three times a month - sometimes for non financing sales, 5% discount allowed + separate discount for three times months, cash discount, 5% and 7% discount, self discount and cash discount
+2. package discount discussion
+3. Appointment Booker Cost -> Lead Deduction for Weaver --> add Appointment booker cost -> $50 + $25 for extra product -> Goes to Grand Total Payout
+4. Discuss with Ali about team payout calculation N/related
+5. Outwrite payments for CCHS and Weaver
+6. Undersold calculation review
+7. Add Sales type and funding status,
+8. For financing every calculations automatic, and for other cash and cheque manual
+9. Technician Payout as like sales agent payout
+10. Add product cost and Show free items
+11. Remove the package discount.
+12. Add payment status on financial breakdown 
+13. Carry Forward Technique not resolved
+14. Payroll part for weaver. payroll > commission -> payroll otherwise commission - manual doing for phase 2
+15. Extra  expenditure carry forwards
+16. Technician payout missing in technician breakdown
+17. Insulation and package price, duct sealing product cost
+18. For all discount, put it in breakdown not in total calculation
+19. Package discount, Financing discount, Agent Discount
+
+
+ Put label or note for reason to put status as ready to pay
+ block to create audit ticket if they select no in sales order and if they create sent email to management notification
+ Energy Audit Required, Type of Audit, Rebate Types all options, Number of Audit, -> add Inhouse Rebate(doesn't need Audit for this one)
+ If Selected Rebate then only Audit Required -> item should be based on rebate type
+ If Job is funded, then no option to change Sales Order
+ deduct the lead deduction after, not all(he changed it last minute) travel and shipping, etc. should be deducted from commission not oversold, financing must be deducted form oversold
+ FOR CCHS, Split amount to two manager, manager1, manager 2, 
+ Deductions from old Jobs, say we took money from customer and job is cancelled we paid customer, but we need to deduct from Sales Agent
+ Add pullout/escalation(pullout as sub type) to Job blueprint and ask question when it is pressed -> Ali list questions -> Cancel reason dropdown -> options, between 10 days of cooling period, no reason, Power Authority or Children cancelled, Who is managing it -> Sales Agent/Management
+show job status, agent payment status, tech pay status, financial status in that widget
+if customer refuse to pay -> legal and retention as options,
+options to retention => offer discount, offer gift card, offer services free, offer free equipment, retention without cost,
+popup for lost -> By legal, by escalation
+
+
+
+
+
+All Customer information, sales order, sales type, financing information,
+Plus button to go to work drive or Purchase Agreement
+Breakdown for accounting
+
+
