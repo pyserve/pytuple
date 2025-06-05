@@ -1,14 +1,14 @@
 import os
 
 import requests
-from common.views import BaseModelViewset
 from dotenv import load_dotenv
-from machinelearning import models, serializers
-from machinelearning.pipeline import rag_pipeline
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
+
+from common.views import BaseModelViewset
+from machinelearning import models, serializers
 
 load_dotenv()
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
@@ -19,6 +19,25 @@ class UserUploadedFileViewset(BaseModelViewset):
     serializer_class = serializers.UserUploadedFileSerializer
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser, JSONParser)
+
+    def create(self, request, *args, **kwargs):
+        files = request.FILES.getlist("files")
+
+        if not files:
+            return Response(
+                {"error": "No files uploaded."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        instances = []
+        for file in files:
+            serializer = self.get_serializer(
+                data={"file": file, "user": request.user.id}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            instances.append(serializer.data)
+
+        return Response(instances, status=status.HTTP_201_CREATED)
 
 
 class APICredentialViewset(BaseModelViewset):
@@ -64,33 +83,17 @@ class QueryViewset(viewsets.ViewSet):
                 {"error": "No query provided."}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        context_results = rag_pipeline.retrieve(user_query)
-        contexts = [res["content"] for res in context_results]
-        prompt = f"""
-            Context: {''.join(contexts)}
-            Question: {user_query}
-            Answer:
-        """
-
         response = requests.post(
             f"{OLLAMA_URL}/api/generate",
             json={
                 "model": "gemma3:1b",
-                "prompt": prompt,
+                "prompt": user_query,
                 "stream": False,
             },
             timeout=30,
         )
         if response.status_code == 200:
             data = response.json()
-            data["rag_contexts"] = [
-                {
-                    "content": res["content"],
-                    "source": res["metadata"].get("source", "unknown"),
-                    "score": res["score"],
-                }
-                for res in context_results
-            ]
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response(

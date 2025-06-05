@@ -5,7 +5,6 @@ import aiohttp
 import requests
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
-from machinelearning.pipeline import rag_pipeline
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 
@@ -41,21 +40,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         message = event["message"]
-        context_results = rag_pipeline.retrieve(message)
-        contexts = [res["content"] for res in context_results]
-        prompt = f"""
-        Answer the question based on given context. If there is no answer, say Sorry I'm not able to answer that.
-          Context: {''.join(contexts)}
-          Question: {message}
-          Answer:
-        """
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
                     f"{OLLAMA_URL}/api/generate",
                     json={
                         "model": "gemma3:1b",
-                        "prompt": prompt,
+                        "prompt": message,
                         "stream": True,
                     },
                     timeout=30,
