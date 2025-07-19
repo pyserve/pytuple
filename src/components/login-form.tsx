@@ -24,8 +24,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Info, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
@@ -57,6 +58,13 @@ export function LoginForm({
       toast.error(error instanceof Error ? error.message : "Error");
     }
   };
+  useEffect(() => {
+    const created = sessionStorage.getItem("accountCreated");
+    if (created === "true") {
+      toast.success("Account created successfully!");
+      sessionStorage.removeItem("accountCreated");
+    }
+  }, []);
   const handleGoogleLogin = async () => {
     await signIn("google", {
       callbackUrl: "/",
@@ -84,15 +92,19 @@ export function LoginForm({
       </div>
       <Card className="w-full max-w-sm border-2 border-rose-300 bg-black/[0.5] text-white z-1">
         <CardHeader className="text-center">
-          <Image
-            src="/logos/logo4.jpg"
-            height={60}
-            width={60}
-            alt=""
-            className="mx-auto rounded-full bg-red-200"
-          />
+          <Link href={"/"}>
+            <Image
+              src="/logos/logo4.jpg"
+              height={60}
+              width={60}
+              alt=""
+              className="mx-auto rounded-full bg-red-200"
+            />
+          </Link>
 
-          <CardTitle className="text-2xl">Login into Pytuple</CardTitle>
+          <CardTitle className="text-2xl">
+            Login into <Link href={"/"}>Pytuple</Link>
+          </CardTitle>
           <CardDescription>
             Enter your email below to login to your account
           </CardDescription>

@@ -1,7 +1,8 @@
+"use client";
+
 import Hero from "@/components/hero";
 import Navbar from "@/components/navbar";
 import { SparklesCore } from "@/components/sparkles";
-import { Toaster } from "react-hot-toast";
 
 export default function Home() {
   return (
@@ -22,7 +23,6 @@ export default function Home() {
         <Navbar />
         <Hero />
       </div>
-      <Toaster />
     </main>
   );
 }

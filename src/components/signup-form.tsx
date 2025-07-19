@@ -9,15 +9,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { signupSchema, SignupSchema } from "@/schemas/auth/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { Info, Loader2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import { SparklesCore } from "./sparkles";
 import { Alert, AlertTitle } from "./ui/alert";
 import {
@@ -34,6 +36,7 @@ export function SignupForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [error, setError] = useState("");
+  const router = useRouter();
   const [IsLoading, setIsLoading] = useState(false);
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
@@ -49,11 +52,32 @@ export function SignupForm({
   const onSubmit = async (values: SignupSchema) => {
     setIsLoading(true);
     try {
-      const res = await api.post("/users/", values);
+      const res = await api.post(`/dj-rest-auth/registration/`, {
+        username: values.email,
+        email: values.email,
+        first_name: values.first_name,
+        last_name: values.last_name,
+        password1: values.password,
+        password2: values.password,
+      });
       console.log("🚀 ~ onSubmit ~ res:", res);
+      form.reset();
+      sessionStorage.setItem("accountCreated", "true");
+      router.push("/login");
     } catch (error) {
       console.log("🚀 ~ onSubmit ~ error:", error);
-      toast.error(error instanceof Error ? error.message : "Error");
+      if (error instanceof AxiosError) {
+        const errors = error.response?.data;
+        if (errors && typeof errors === "object") {
+          const k = Object.keys(errors)[0];
+          const message = Array.isArray(errors[k]) ? errors[k][0] : errors[k];
+          toast.error(`${k}: ${message}`);
+        } else {
+          toast.error("Something went wrong");
+        }
+      } else {
+        toast.error(error instanceof Error ? error.message : "Error");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -80,13 +104,15 @@ export function SignupForm({
       </div>
       <Card className="w-full max-w-md border-2 border-rose-300 bg-black/[0.5] text-white z-1">
         <CardHeader className="text-center">
-          <Image
-            src="/logos/logo4.jpg"
-            height={60}
-            width={60}
-            alt=""
-            className="mx-auto rounded-full bg-red-200"
-          />
+          <Link href={"/"}>
+            <Image
+              src="/logos/logo4.jpg"
+              height={60}
+              width={60}
+              alt=""
+              className="mx-auto rounded-full bg-red-200"
+            />
+          </Link>
           <CardTitle className="text-2xl">Register an Account</CardTitle>
           <CardDescription>
             Enter your details below to create an account
@@ -197,12 +223,12 @@ export function SignupForm({
                 </div>
                 <Button type="submit" className="w-full">
                   {IsLoading ? (
-                    <span className="flex gap-2">
+                    <span className="flex items-center gap-2">
                       <Loader2 className="animate-spin" />
-                      <span>Logging in..</span>
+                      <span>Creating Account..</span>
                     </span>
                   ) : (
-                    "Login"
+                    "Create Account"
                   )}
                 </Button>
               </div>
