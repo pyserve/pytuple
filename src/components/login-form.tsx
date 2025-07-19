@@ -21,10 +21,12 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { loginSchema, LoginSchema } from "@/schemas/auth/LoginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { Info, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,6 +38,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter();
   const [error, setError] = useState("");
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -55,7 +58,19 @@ export function LoginForm({
         callbackUrl: "/",
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Error");
+      console.log("🚀 ~ onSubmit ~ error:", error);
+      if (error instanceof AxiosError) {
+        const errors = error.response?.data;
+        if (errors && typeof errors === "object") {
+          const k = Object.keys(errors)[0];
+          const message = Array.isArray(errors[k]) ? errors[k][0] : errors[k];
+          toast.error(`${k}: ${message}`);
+        } else {
+          toast.error("Something went wrong");
+        }
+      } else {
+        toast.error(error instanceof Error ? error.message : "Error");
+      }
     }
   };
   useEffect(() => {
