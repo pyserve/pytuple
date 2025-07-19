@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { loginSchema, LoginSchema } from "@/schemas/auth/LoginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
 import { Info, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
@@ -52,27 +51,26 @@ export function LoginForm({
   } = form;
   const onSubmit = async (values: LoginSchema) => {
     console.log("Form submitted with values:", values);
-    try {
-      await signIn("credentials", {
-        ...values,
-        callbackUrl: "/",
-      });
-    } catch (error) {
-      console.log("🚀 ~ onSubmit ~ error:", error);
-      if (error instanceof AxiosError) {
-        const errors = error.response?.data;
-        if (errors && typeof errors === "object") {
-          const k = Object.keys(errors)[0];
-          const message = Array.isArray(errors[k]) ? errors[k][0] : errors[k];
-          toast.error(`${k}: ${message}`);
-        } else {
-          toast.error("Something went wrong");
-        }
-      } else {
-        toast.error(error instanceof Error ? error.message : "Error");
-      }
+
+    const result = await signIn("credentials", {
+      ...values,
+      redirect: false,
+      callbackUrl: "/",
+    });
+
+    if (result?.ok) {
+      router.push(result.url || "/");
+    } else {
+      toast.error("Invalid credentials or login failed.");
     }
   };
+
+  const handleGoogleLogin = async () => {
+    await signIn("google", {
+      callbackUrl: "/",
+    });
+  };
+
   useEffect(() => {
     const created = sessionStorage.getItem("accountCreated");
     if (created === "true") {
@@ -80,11 +78,7 @@ export function LoginForm({
       sessionStorage.removeItem("accountCreated");
     }
   }, []);
-  const handleGoogleLogin = async () => {
-    await signIn("google", {
-      callbackUrl: "/",
-    });
-  };
+
   console.log(form.formState.errors);
   return (
     <div
