@@ -14,9 +14,11 @@ import { cn } from "@/lib/utils";
 import { signupSchema, SignupSchema } from "@/schemas/auth/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Info, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { SparklesCore } from "./sparkles";
 import { Alert, AlertTitle } from "./ui/alert";
 import {
   Form,
@@ -58,9 +60,33 @@ export function SignupForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
+    <div
+      className={cn(
+        "flex flex-col gap-6 items-center justify-center min-h-screen bg-black/[0.96]",
+        className
+      )}
+      {...props}
+    >
+      <div className="h-full w-full absolute inset-0 z-0">
+        <SparklesCore
+          id="tsparticlesfullpage"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={100}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+        />
+      </div>
+      <Card className="w-full max-w-md border-2 border-rose-300 bg-black/[0.5] text-white z-1">
+        <CardHeader className="text-center">
+          <Image
+            src="/logos/logo4.jpg"
+            height={60}
+            width={60}
+            alt=""
+            className="mx-auto rounded-full bg-red-200"
+          />
           <CardTitle className="text-2xl">Register an Account</CardTitle>
           <CardDescription>
             Enter your details below to create an account
