@@ -24,6 +24,7 @@ import {
   PhoneCall,
   SearchIcon,
   SettingsIcon,
+  Tickets,
   Upload,
   Users,
 } from "lucide-react";
@@ -73,6 +74,11 @@ const data = {
           title: "Leads",
           url: "/leads",
           icon: Users,
+        },
+        {
+          title: "Tickets",
+          url: "/tickets",
+          icon: Tickets,
         },
         {
           title: "Analytics",
