@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { signupSchema, SignupSchema } from "@/schemas/auth/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
