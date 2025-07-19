@@ -7,8 +7,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 interface FileUploadFieldProps {
-  onChange: (file: File | null) => void;
-  value?: File | null;
+  onChange: (files: File[]) => void;
+  value?: File[];
   className?: string;
 }
 
@@ -17,34 +17,44 @@ export function FileUploadField({
   value,
   className,
 }: FileUploadFieldProps) {
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [fileSize, setFileSize] = useState<number | null>(null);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [filePreviews, setFilePreviews] = useState<
+    { name: string; size: number; preview?: string }[]
+  >([]);
 
   useEffect(() => {
-    if (value) {
-      setFileName(value.name);
-      setFileSize(value.size);
-      if (value.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setFilePreview(reader.result as string);
+    if (value && value.length > 0) {
+      const newPreviews = value.map((file) => {
+        const info: { name: string; size: number; preview?: string } = {
+          name: file.name,
+          size: file.size,
         };
-        reader.readAsDataURL(value);
-      } else {
-        setFilePreview(null);
-      }
+
+        if (file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setFilePreviews((prev) =>
+              prev.map((f) =>
+                f.name === file.name
+                  ? { ...f, preview: reader.result as string }
+                  : f
+              )
+            );
+          };
+          reader.readAsDataURL(file);
+        }
+
+        return info;
+      });
+
+      setFilePreviews(newPreviews);
     } else {
-      setFileName(null);
-      setFileSize(null);
-      setFilePreview(null);
+      setFilePreviews([]);
     }
   }, [value]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0];
-      onChange(file);
+      onChange(acceptedFiles);
     },
     [onChange]
   );
@@ -52,7 +62,7 @@ export function FileUploadField({
   const { getRootProps, getInputProps, isDragActive, fileRejections } =
     useDropzone({
       onDrop,
-      multiple: false,
+      multiple: true,
       accept: {
         "application/json": [".json"],
         "text/csv": [".csv"],
@@ -80,7 +90,7 @@ export function FileUploadField({
             className={cn(
               "border-2 border-dashed p-20 rounded-md cursor-pointer text-center",
               "transition-colors duration-200 ease-in-out",
-              fileName
+              filePreviews.length > 0
                 ? "border-green-500 bg-green-50"
                 : "border-gray-400 bg-gray-50",
               isDragActive
@@ -92,35 +102,42 @@ export function FileUploadField({
             <input {...getInputProps()} />
             {isDragActive ? (
               <p className="text-gray-700 font-semibold">
-                Drop the file here ...
+                Drop the files here ...
               </p>
-            ) : fileName ? (
-              <div className="flex flex-col items-center justify-center">
-                <FileCheckIcon className="h-8 w-8 text-green-600 mb-2" />
-                <span className="font-semibold text-gray-800">{fileName}</span>
-                {fileSize && (
-                  <span className="text-sm text-gray-600">
-                    ({(fileSize / 1024 / 1024).toFixed(2)} MB)
-                  </span>
-                )}
-                {filePreview && (
-                  <img
-                    src={filePreview}
-                    alt="File preview"
-                    className="mt-4 max-w-full h-24 object-contain rounded-md"
-                  />
-                )}
+            ) : filePreviews.length > 0 ? (
+              <div className="flex flex-col items-center justify-center space-y-4">
+                {filePreviews.map((file) => (
+                  <div
+                    key={file.name}
+                    className="flex flex-col items-center justify-center border rounded p-2 w-full bg-white"
+                  >
+                    <FileCheckIcon className="h-6 w-6 text-green-600 mb-1" />
+                    <span className="font-semibold text-gray-800">
+                      {file.name}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                    </span>
+                    {file.preview && (
+                      <img
+                        src={file.preview}
+                        alt="Preview"
+                        className="mt-2 max-w-full h-20 object-contain rounded"
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
             ) : (
               <p className="text-gray-600">
-                Drag & drop a file here, or click to select a file
+                Drag & drop files here, or click to select files
               </p>
             )}
           </div>
           {fileRejections.length > 0 && (
             <p className="text-red-500 text-sm mt-2">
-              {`File not accepted. Please ensure it's a supported type and within
-              size limits.`}
+              File not accepted. Please ensure it's a supported type and within
+              size limits.
               {fileRejections.map(({ file, errors }) => (
                 <span key={file.name} className="block">
                   <span className="font-semibold">{file.name}:</span>{" "}

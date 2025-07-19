@@ -1,8 +1,8 @@
 import { MainProvider } from "@/components/providers";
+import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
-import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function MainLayout({
   children,

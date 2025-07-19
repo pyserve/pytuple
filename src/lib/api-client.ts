@@ -16,7 +16,6 @@ export const useApi = () => {
 
   api.interceptors.request.use(
     async (request) => {
-      console.log("🚀 ~ response:", response.data);
       if (session) {
         request.headers.Authorization = `Token ${session.token}`;
       }

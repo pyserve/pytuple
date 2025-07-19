@@ -18,23 +18,25 @@ export default function FileUploadForm() {
   const form = useForm<UploadFileSchemaType>({
     resolver: zodResolver(UploadFileSchema),
     defaultValues: {
-      file: undefined,
+      files: undefined,
     },
   });
 
-  const watchFile = form.watch("file");
+  const watchFile = form.watch("files");
 
   const onSubmit = async (values: UploadFileSchemaType) => {
     console.log("🚀 ~ onSubmit ~ values:", values);
     try {
       const formData = new FormData();
-      formData.append("file", values.file);
+      values?.files?.forEach((file: File) => {
+        formData.append("files", file);
+      });
       if (session?.user) {
         formData.append("user", session?.user?.id);
       }
       const res = await api.post("/uploaded_files/", formData);
       console.log("🚀 ~ onSubmit ~ res:", res);
-      form.setValue("file", undefined);
+      form.setValue("files", undefined);
       toast.success("Success!!");
       window.location.reload();
     } catch (error) {
@@ -45,7 +47,7 @@ export default function FileUploadForm() {
   console.log("🚀 ~ Page ~ form:", form.formState.errors);
 
   return (
-    <div className="m-2">
+    <div className="m-2 overflow-auto">
       <div className="w-full mx-auto p-6 bg-white rounded-lg">
         <h2 className="text-2xl font-bold text-gray-800 flex gap-2 items-center">
           <FileCode />
@@ -61,7 +63,7 @@ export default function FileUploadForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="file"
+              name="files"
               render={({ field }) => (
                 <FileUploadField
                   onChange={field.onChange}
@@ -74,8 +76,9 @@ export default function FileUploadForm() {
                 <Button
                   variant="destructive"
                   type="button"
-                  onClick={() => form.setValue("file", undefined)}
+                  onClick={() => form.setValue("files", undefined)}
                   className="w-1/2 font-bold"
+                  disabled={form.formState.isSubmitting}
                 >
                   <Trash />
                   <span>Clear</span>

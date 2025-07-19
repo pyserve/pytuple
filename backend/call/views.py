@@ -1,13 +1,12 @@
 import os
 
+from call import models, serializers
+from common.views import BaseModelViewset
 from django.http import HttpResponse
 from dotenv import load_dotenv
 from rest_framework import permissions
 from rest_framework.decorators import action
 from twilio.twiml.voice_response import Connect, Say, Stream, VoiceResponse
-
-from call import models, serializers
-from common.views import BaseModelViewset
 
 load_dotenv()
 

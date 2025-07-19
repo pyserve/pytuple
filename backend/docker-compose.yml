@@ -36,10 +36,11 @@ services:
       - "6379:6379"
   
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:latest
     container_name: ollama-server
     ports:
       - "11434:11434"
+  
 
 volumes:
   postgres_data:
