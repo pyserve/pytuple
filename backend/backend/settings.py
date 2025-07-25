@@ -20,7 +20,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}" for host in ALLOWED_HOSTS if host not in ("*", "")
+    "https://pytuple.onrender.com",
+    "https://*.onrender.com",
 ]
 
 INSTALLED_APPS = [
