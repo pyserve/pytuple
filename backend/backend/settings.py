@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "analytics.apps.AnalyticsConfig",
     "machinelearning.apps.MachinelearningConfig",
     "djangoseed.apps.DjangoseedConfig",
+    "customer.apps.CustomerConfig",
+    "ticket.apps.TicketConfig",
 ]
 
 SITE_ID = 1

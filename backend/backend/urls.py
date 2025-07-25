@@ -1,6 +1,7 @@
 from accounts.urls import router as account_routers
 from accounts.views import GoogleLogin
 from call.urls import router as call_routers
+from customer.urls import router as customer_routers
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -13,6 +14,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.registry.extend(account_routers.registry)
 router.registry.extend(call_routers.registry)
+router.registry.extend(customer_routers.registry)
 router.registry.extend(lead_routers.registry)
 router.registry.extend(aiml_routers.registry)
 

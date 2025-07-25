@@ -26,6 +26,7 @@ import {
   SettingsIcon,
   Tickets,
   Upload,
+  UserRoundCog,
   Users,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -69,6 +70,11 @@ const data = {
           title: "Calls",
           url: "/calls",
           icon: PhoneCall,
+        },
+        {
+          title: "Customers",
+          url: "/customers",
+          icon: UserRoundCog,
         },
         {
           title: "Leads",
