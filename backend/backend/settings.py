@@ -19,6 +19,9 @@ SECRET_KEY = "django-insecure-p_)q&zq6#_@=(&q28t0(q=h)w5vb56^53q9y9ocmtp29+vv99-
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{host}" for host in ALLOWED_HOSTS if host not in ("*", "")
+]
 
 INSTALLED_APPS = [
     "daphne",
@@ -125,6 +128,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
 
 ROOT_URLCONF = "backend.urls"
 
